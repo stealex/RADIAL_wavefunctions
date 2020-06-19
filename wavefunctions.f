@@ -254,7 +254,7 @@ C                  WRITE(*,*) I, NTAB, RAD(I)*a0, rNuc
           end do
         else if (lin.eq.2) then
           eMaxLog = DLOG10(QValue)
-          eMinLog = -3.0D0
+          eMinLog = -6.0D0
           dE = (eMaxLog - eMinLog)/(nPointsEn-1)
           do i = 1, nPointsEn
             energyPoints(i) = eMinLog + (i-1)*dE
