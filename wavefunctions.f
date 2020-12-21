@@ -9,9 +9,11 @@
       CHARACTER fmtEn*8
       CHARACTER iKStr*2
       CHARACTER fmtK*8
+      INTEGER flagChargedSphere
       parameter(PI=3.1415926535897932D0)
       parameter(nPointsEnMax=1000)
       COMMON/EnergyPts/energyPoints(nPointsEnMax)
+      COMMON/ChargedSpherePot/flagChargedSphere
       DIMENSION DR0(NDIM)  ! Output from SGRID.
 C****Potential.
       COMMON/CVPOT/Z,V0,A,IPOT
@@ -35,11 +37,14 @@ C****Read configuration numbers
 C Nucleus name
 C Nucleus parameters:ZP, AP, QValue,
 C Computation parameters:rMin, rMax, dr
+C Flag to write also radial wavefunctions
+C Flag for potential to use: Screened charged sphere or screened Mirea pot
       OPEN (8,FILE='wavefunctions.conf')
       READ (8,*) nucleusName
       READ (8,*) zP,aP,qValue,nPointsEn
       READ (8,*) rMax,nPointsRad
       READ (8,*) flagWriteWF
+      READ (8,*) flagChargedSphere
       CLOSE (8)
 
       Z=zP

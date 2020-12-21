@@ -392,15 +392,20 @@ c      print*,p,q,'ks',kappa,sigma
       subroutine rv(a,zd,ri,vr,phi)
 c potential coulomb in coordonate normalizate
       implicit double precision (a-h,o-z)
+      INTEGER flagChargedSphere
       dimension aa(1000),x(1000),b(1000),c(1000),d(1000),z(32),g(32)
       common/xxxx/xxx(1000),yyy(1000),nuva
+      COMMON/ChargedSpherePot/flagChargedSphere
       r=ri*0.529177e5
       rmare=1.2*a**(.333333333)
       alfa=1./137.
       hc=197.3269718
 
-
-      if(r.lt.17.5d0)then
+      radThreshold = 0.0D0
+      if(flagChargedSphere.eq.0) then
+        radThreshold = 17.5D0
+      end if
+      if(r.lt.radThreshold)then ! was 17.5d0
       no=nuva
       do i=1,no   
       x(i)=xxx(i)
