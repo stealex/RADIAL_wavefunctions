@@ -7,7 +7,7 @@
       CHARACTER nucleusName*16
       CHARACTER iEnStr*5
       CHARACTER fmtEn*8
-      CHARACTER iKStr*2
+      CHARACTER iKStr*10
       CHARACTER fmtK*8
       INTEGER flagChargedSphere
       parameter(PI=3.1415926535897932D0)
@@ -15,6 +15,7 @@
       COMMON/EnergyPts/energyPoints(nPointsEnMax)
       COMMON/ChargedSpherePot/flagChargedSphere
       DIMENSION DR0(NDIM)  ! Output from SGRID.
+      DIMENSION kGrid(100)
 C****Potential.
       COMMON/CVPOT/Z,V0,A,IPOT
       DIMENSION R0(NDIM),RV0(NDIM)
@@ -41,7 +42,7 @@ C Flag to write also radial wavefunctions
 C Flag for potential to use: Screened charged sphere or screened Mirea pot
       OPEN (8,FILE='wavefunctions.conf')
       READ (8,*) nucleusName
-      READ (8,*) zP,aP,qValue,nPointsEn
+      READ (8,*) zP,aP,qValue,nPointsEn,kmin,kmax
       READ (8,*) rMax,nPointsRad
       READ (8,*) flagWriteWF
       READ (8,*) flagChargedSphere
@@ -104,12 +105,19 @@ C  ****  The same as the one for the potential.
   !     CLOSE(7)
   !  20 CONTINUE
 
-      K=-1
+      nkElements=0
+      do ik=1,kmax-kmin+1
+        K=kmin+ik-1
+	if (K.ne.0) then
+          kGrid(nKelements+1) = K
+	  nkElEmEntS = nkelements+1
+	end if
+      end do
       EPS=1.0D-15
       IGRID = 0
-      do iK = 1,2
-        K=K+(iK-1)*2
-        do iEn=1,nPointsEn
+      do iK = 1,nkelements
+        K=kGrid(iK)
+	 do iEn=1,nPointsEn
           WRITE(*,*) 'Energy point: ',iEn, ' out of: ', nPointsEn
           E = energyPoints(iEn)/e0
           EMEV = energyPoints(iEn)
@@ -159,27 +167,33 @@ C
      3      /' #',6X,'  Inner phase shift=',E22.15,
      4      /' #',6X,'Coulomb phase shift=',E22.15,'  (ETA=',E13.6,')')
           fmtEn = '(I3.3)'
-          fmtK  = '(I2.2)'
+          fmtK  = '(I4.4)'
           write(iEnStr, fmtEn) iEn
-          write(iKStr, fmtK) K
+          Write(*,'(I2)') K
+	  write(iKStr, '(I2.2)') ABS(K)
+
           IF (flagWriteWF.eq.1) then
             IF(K.gt.0) THEN
               OPEN(10, 
-     $         FILE='../Nuclei/'//trim(nucleusName)//'/raw/wf_en'//trim(iEnStr)//'_kp1.dat', STATUS="REPLACE")
+     $         FILE='../Nuclei/'//trim(nucleusName)//'/raw/wf_en'//trim(iEnStr)//
+     $              '_kp'//trim(ikStr)//'.dat', STATUS="REPLACE")
               OPEN(11, 
-     $         FILE='../Nuclei/'//trim(nucleusName)//'/worked/wf_en'//trim(iEnStr)//'_kp1.dat', STATUS="REPLACE")
+     $         FILE='../Nuclei/'//trim(nucleusName)//'/worked/wf_en'//trim(iEnStr)//
+     $              '_kp'//trim(iKstr)//'.dat', STATUS="REPLACE")
             ELSE
-              OPEN(10, 
-     $         FILE='../Nuclei/'//trim(nucleusName)//'/raw/wf_en'//trim(iEnStr)//'_km1.dat', STATUS="REPLACE")
+	      OPEN(10, 
+     $         FILE='../Nuclei/'//trim(nucleusName)//'/raw/wf_en'//trim(iEnStr)//
+     $              '_km'//trim(ikStr)//'.dat', STATUS="REPLACE")
               OPEN(11, 
-     $         FILE='../Nuclei/'//trim(nucleusName)//'/worked/wf_en'//trim(iEnStr)//'_km1.dat', STATUS="REPLACE")
+     $         FILE='../Nuclei/'//trim(nucleusName)//'/worked/wf_en'//trim(iEnStr)//
+     $              '_km'//trim(iKstr)//'.dat', STATUS="REPLACE")
             ENDIF
           ENDIF
 
  1501     FORMAT(1X,'# Radial wave functions calculated by RADIAL.')
           IF (flagWriteWF.eq.1) then
             WRITE(10,1501)
-            WRITE(10,1401) E,K,EPS,PHASE,DELTA,ETA
+            WRITE(10,'(D16.5,I3,4D16.5)') E,K,EPS,PHASE,DELTA,ETA
           endif
 
           NTAB=NGP
