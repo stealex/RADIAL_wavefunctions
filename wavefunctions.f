@@ -34,6 +34,7 @@ C****MeV/fm.
       electronMass = 0.510998950D0
       hc=197.3269804D0
       ec=8.5424546D-2
+      normalUnits = hc/(e0*a0)
 C****Read configuration numbers
 C Nucleus name
 C Nucleus parameters:ZP, AP, QValue,
@@ -219,8 +220,11 @@ C  -----  ----------------------------------------------------------------
             endif
             IF(I.gt.1) THEN
               if(flagWriteWF.eq.1) then
-                WRITE(11,'(1X,1P,3E16.8)') RAD(I)*a0, 
-     $           wnormHigh*P(I)/(RAD(I)*wke),wnormHigh*Q(I)/(RAD(I)*wke)
+		WRITE(11,'(1X,1P,5E16.8)') RAD(I)*a0, 
+     $           normalUnits*DCOS(PHASE)*wnormHigh*P(I)/(RAD(I)*wke),
+     $		 normalUnits*DSIN(PHASE)*wnormHigh*P(I)/(RAD(I)*wke),
+     $           normalUnits*DCOS(PHASE)*wnormHigh*Q(I)/(RAD(I)*wke),
+     $		 normalUnits*DSIN(PHASE)*wnormHigh*Q(I)/(RAD(I)*wke)
               endif
 C     $         wnormHigh*P(I)/(RAD(I)*wke),wnormLow*Q(I)/(RAD(I)*wke)
               IF(I.LT.NTAB) THEN
@@ -245,7 +249,7 @@ C                  WRITE(*,*) I, NTAB, RAD(I)*a0, rNuc
       END DO
 
       OPEN(10, FILE='../Nuclei/'//trim(nucleusName)//'/wfSurf.dat', STATUS='REPLACE')
-      normalUnits = hc/(e0*a0)
+      
 
       do i = 1, nPointsEn
         WRITE(10, '(1X,1P,9E16.8)') energyPoints(i)+electronMass,
