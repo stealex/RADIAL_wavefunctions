@@ -9,11 +9,11 @@
       CHARACTER fmtEn*8
       CHARACTER iKStr*10
       CHARACTER fmtK*8
-      INTEGER flagChargedSphere
+      INTEGER flagChargedSphere, nChargedLeptons
       parameter(PI=3.1415926535897932D0)
       parameter(nPointsEnMax=1000)
       COMMON/EnergyPts/energyPoints(nPointsEnMax)
-      COMMON/ChargedSpherePot/flagChargedSphere
+      COMMON/ChargedSpherePot/flagChargedSphere, nChargedLeptons
       DIMENSION DR0(NDIM)  ! Output from SGRID.
       DIMENSION kGrid(100)
 C****Potential.
@@ -47,6 +47,7 @@ C Flag for potential to use: Screened charged sphere or screened Mirea pot
       READ (8,*) rMax,nPointsRad
       READ (8,*) flagWriteWF
       READ (8,*) flagChargedSphere
+      READ (8,*) nChargedLeptons
       CLOSE (8)
 
       Z=zP

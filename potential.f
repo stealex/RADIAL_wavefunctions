@@ -392,10 +392,10 @@ c      print*,p,q,'ks',kappa,sigma
       subroutine rv(a,zd,ri,vr,phi)
 c potential coulomb in coordonate normalizate
       implicit double precision (a-h,o-z)
-      INTEGER flagChargedSphere
+      INTEGER flagChargedSphere,nChargedLeptons
       dimension aa(1000),x(1000),b(1000),c(1000),d(1000),z(32),g(32)
       common/xxxx/xxx(1000),yyy(1000),nuva
-      COMMON/ChargedSpherePot/flagChargedSphere
+      COMMON/ChargedSpherePot/flagChargedSphere, nChargedLeptons
       r=ri*0.529177e5
       rmare=1.2*a**(.333333333)
       alfa=1./137.
@@ -406,25 +406,27 @@ c potential coulomb in coordonate normalizate
         radThreshold = 17.5D0
       end if
       if(r.lt.radThreshold)then ! was 17.5d0
-      no=nuva
-      do i=1,no   
-      x(i)=xxx(i)
-      aa(i)=yyy(i)
-      enddo
-      z(1)=r
-      call SPLAKS2(X,AA,B,C,D,No,1,1,Z,G,1)
-      vr=g(1)
+        no=nuva
+        do i=1,no   
+        x(i)=xxx(i)
+        aa(i)=yyy(i)
+        enddo
+        z(1)=r
+        call SPLAKS2(X,AA,B,C,D,No,1,1,Z,G,1)
+        vr=-1.0D0*abs(nChargedLeptons)/nChargedLeptons*g(1)
       else
-      if(r.le.rmare)then
-      vr=-zd*alfa*hc*(3.-(r/rmare)**2)/2./rmare
-      else
-      vr=-zd*alfa*hc/r
-      endif
+        if(r.le.rmare)then
+          vr=zd*abs(nChargedLeptons)/nChargedLeptons
+     *     *alfa*hc*(3.-(r/rmare)**2)/2./rmare
+        else
+          vr=zd*abs(nChargedLeptons)/nChargedLeptons
+     *     *alfa*hc/r
+        endif
       endif
       vr=vr/27.2114e-6
       vr=vr*ri
       call zefectiv(zd,ri,phi)
-      vr=-2.d0+(vr+2.d0)*phi
+      vr=-dabs(1.0D0*nChargedLeptons)+(vr+abs(1.0D0*nChargedLeptons))*phi
 c           vr=-vr      
       return
       end
