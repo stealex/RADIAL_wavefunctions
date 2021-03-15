@@ -393,9 +393,11 @@ c      print*,p,q,'ks',kappa,sigma
 c potential coulomb in coordonate normalizate
       implicit double precision (a-h,o-z)
       INTEGER flagChargedSphere,nChargedLeptons
+      INTEGER flagScreening
       dimension aa(1000),x(1000),b(1000),c(1000),d(1000),z(32),g(32)
       common/xxxx/xxx(1000),yyy(1000),nuva
       COMMON/ChargedSpherePot/flagChargedSphere, nChargedLeptons
+      COMMON/Screening/flagScreening
       r=ri*0.529177e5
       rmare=1.2*a**(.333333333)
       alfa=1./137.
@@ -425,7 +427,14 @@ c potential coulomb in coordonate normalizate
       endif
       vr=vr/27.2114e-6
       vr=vr*ri
-      call zefectiv(zd,ri,phi)
+
+c     WITHOUT/WITH SCREENING
+      if(flagScreening.eq.0)then
+	phi=1.0D0
+      else
+	call zefectiv(zd,ri,phi)
+      endif
+
       vr=-dabs(1.0D0*nChargedLeptons)+(vr+abs(1.0D0*nChargedLeptons))*phi
 c           vr=-vr      
       return
