@@ -81,7 +81,7 @@ void radial_interface::Initialize(){
         if (fConfig->processName.find("2") != std::string::npos)
             zPotential--;
     }
-    else zPotential = -1. * zPotential; //EC, so electron is bound in nucleus field.
+    else zPotential = -1. * fConfig->zParent; //EC, so electron is bound in nucleus field.
 
     ObtainPotential(zPotential);
 
@@ -105,14 +105,20 @@ void radial_interface::Initialize(){
 
 void radial_interface::ObtainPotential(double zPotential){
 
-    if (fConfig->potentialType.find("ChargedSphere") == std::string::npos){
-        std::cout << "ERROR! only ChargedSphere potential supported currently" << std::endl;
+    if (fConfig->potentialType.find("ChargedSphere") == std::string::npos &&
+        fConfig->potentialType.find("PointCharge") == std::string::npos){
+        std::cout << "ERROR! only ChargedSphere, PointCharge potential supported currently" << std::endl;
         exit(1);
     }
 
     double rMinLog = std::log10(fConfig->minimumRadius);
     double rMaxLog = std::log10(fConfig->maximumRadius);
     double dr = (rMaxLog - rMinLog)/(fConfig->nRadialPoints -1.);
+
+    double rNuc = 0.0;
+    if (fConfig->potentialType.find("ChargedSphere") != std::string::npos){
+      rNuc = fConfig->nuclearRadius;
+    }
 
     math_tools *mathInstance = math_tools::GetInstance();
     rValues.clear();
@@ -125,7 +131,7 @@ void radial_interface::ObtainPotential(double zPotential){
 
     for (int i = 1; i < fConfig->nRadialPoints; i++){
         rValues.push_back(std::pow(10., rMinLog + i*dr)/a0);
-        potValues.push_back(mathInstance->ChargedSpherePot(zPotential, fConfig->nuclearRadius, a0*rValues[i])/e0);
+        potValues.push_back(mathInstance->ChargedSpherePot(zPotential, rNuc, a0*rValues[i])/e0);
         rvValues.push_back(rValues[i]*potValues[i]);
     }
 }
