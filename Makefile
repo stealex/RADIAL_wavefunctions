@@ -11,7 +11,7 @@ CPP_INCLUDE_DIR := include
 CPP_SOURCES := $(wildcard $(CPP_SRC_DIR)/*.cc)
 CPP_OBJ_FILES := $(patsubst $(CPP_SRC_DIR)/%.cc,$(BUILD_DIR)/%_c.o,$(CPP_SOURCES))
 
-CPP_FLAGS := -Iinclude -MMD -MP -Wpadded -Wpacked -malign-double -mpreferred-stack-boundary=8
+CPP_FLAGS := -Iinclude -MMD -MP -Wpacked -malign-double -mpreferred-stack-boundary=8
 FORTRAN_FLAGS := -g -fPIC -fno-automatic -fno-backslash -fno-second-underscore -falign-commons
 CXXFLAGS := -Wall -g
 LDFLAGS := -Llib -lstdc++
