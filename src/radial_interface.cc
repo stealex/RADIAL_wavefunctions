@@ -232,9 +232,8 @@ void radial_interface::SolveScatteringStates() {
     }
     // setting up the run
     double momentum = std::sqrt(energyPoints[iEnergy] *
-                                (energyPoints[iEnergy] + 2. * electronMass)) /
-                      e0;
-    double norm = std::sqrt(energyPoints[iEnergy] /
+                                (energyPoints[iEnergy] + 2. * electronMass)) /e0;
+    double norm = std::sqrt((energyPoints[iEnergy] + 2. * electronMass)/
                             (2. * (energyPoints[iEnergy] + electronMass)));
 
     double waveLength =
@@ -394,16 +393,12 @@ void radial_interface::SolveBoundStates() {
       std::cout << " ... k = " << iK << "\n";
 
       // double e = -1*std::pow(fConfig->zParent, 2.)/(2.0 * iN * iN);
-      double e =
-        -1. * (electronMass / e0) *
-        (1. -
-         1. / std::sqrt(1. + std::pow(fineStructure * fConfig->zParent, 2) /
-                               std::pow(iN - std::abs(iK) +
-                                          std::sqrt(iK * iK -
-                                                    std::pow(fineStructure *
-                                                               fConfig->zParent,
-                                                             2.)),
-                                        2)));
+      double e =-1. * (electronMass / e0) *
+        (1. - 
+         1. / std::sqrt(
+           1. + std::pow(fineStructure * fConfig->zParent, 2) / 
+           std::pow(iN - std::abs(iK) + 
+            std::sqrt(iK * iK - std::pow(fineStructure * fConfig->zParent, 2.)), 2)));
       std::cout << "   Trial energy " << std::scientific << e * e0 << "MeV\n";
       dbound(&e, &eps, &nValue, &kValue);
       std::cout << "   Bound energy " << std::scientific << e * e0 << "MeV\n";
