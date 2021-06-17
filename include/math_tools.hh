@@ -14,8 +14,8 @@ class math_tools{
         void ComputeScreeningFunction(int nPoints, double xMax, int nMaxCoeffs=100, bool dump=false);
         void ComputeExpansionCoefficients(std::vector<double> &coeffs);
 
-        std::vector<double> screenXvals;
-        std::vector<double> screenPhiVals;
+        static std::vector<double> screenXvals;
+        static std::vector<double> screenPhiVals;
 
     private:
         math_tools();
