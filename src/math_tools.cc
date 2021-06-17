@@ -9,6 +9,8 @@
 
 using namespace physical_constants;
 math_tools *math_tools::fInstance = 0;
+std::vector<double> math_tools::screenXvals = {};
+std::vector<double> math_tools::screenPhiVals = {};
 
 math_tools *math_tools::GetInstance(){
     if (!fInstance) fInstance = new math_tools();
@@ -16,8 +18,6 @@ math_tools *math_tools::GetInstance(){
 }
 
 math_tools::math_tools():
-screenXvals(0),
-screenPhiVals(0),
 glNodes(0),
 glWeights(0)
 {
