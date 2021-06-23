@@ -19,7 +19,7 @@ class radial_interface{
         void SolveBoundStates();
 
         void WriteSurfWFLine(double e, std::vector<double> vals, std::ofstream &file);
-        void WriteBoundWFFile(int irMax,std::ofstream &file);
+        void WriteRadialWFFile(int irMax,std::ofstream &file);
         void FindPQSurface(std::vector<double> &pq);
 
     private:

@@ -34,13 +34,13 @@ void dfree(double *e, double *eps, double *phase, int *k, int *irwf);
 void dbound(double *e, double *eps, int *n, int *k);
 
 extern struct {
-    double RAD[NDIM];
-    double P[NDIM];
-    double Q[NDIM];
-    int    NGP;
-    int    ILAST;
-    int    IER;
-  } radwf_;
+  double RAD[NDIM];
+  double P[NDIM];
+  double Q[NDIM];
+  int    NGP;
+  int    ILAST;
+  int    IER;
+} radwf_;
 }
 
 using namespace physical_constants;
@@ -232,8 +232,9 @@ void radial_interface::SolveScatteringStates() {
     }
     // setting up the run
     double momentum = std::sqrt(energyPoints[iEnergy] *
-                                (energyPoints[iEnergy] + 2. * electronMass)) /e0;
-    double norm = std::sqrt((energyPoints[iEnergy] + 2. * electronMass)/
+                                (energyPoints[iEnergy] + 2. * electronMass)) /
+                      e0;
+    double norm = std::sqrt((energyPoints[iEnergy] + 2. * electronMass) /
                             (2. * (energyPoints[iEnergy] + electronMass)));
 
     double waveLength =
@@ -295,7 +296,7 @@ void radial_interface::SolveScatteringStates() {
         }
       }
 
-      WriteBoundWFFile(irMax, radFile);
+      WriteRadialWFFile(irMax, radFile);
       radFile.close();
     }
 
@@ -308,9 +309,12 @@ void radial_interface::SolveScatteringStates() {
 }
 void radial_interface::WriteSurfWFLine(double e, std::vector<double> vals,
                                        std::ofstream &file) {
-  file.precision(6);
-  file.width(14);
-  file << e;
+  if (fConfig->wfType.find("scattering") != std::string::npos) {
+    file.precision(6);
+    file.width(14);
+    file << std::scientific;
+    file << e;
+  }
 
   for (size_t i = 0; i < vals.size(); i++) {
     file.precision(6);
@@ -366,6 +370,37 @@ void radial_interface::SolveBoundStates() {
   int    iERR;
   int    nMaxPoints = NDIM;
   double eps        = 1.E-12;
+
+  // prepare file for writing wave-functions on surface
+  std::string surfaceWFFileName =
+    "../Nuclei/" + fConfig->nucleusName + "/" + fConfig->nucleusName +
+    "_surface_" + fConfig->wfType + "_" + fConfig->potentialType +
+    "_screening" + std::to_string(fConfig->applyScreening) + "_" +
+    fConfig->processName + ".dat";
+  std::ofstream surfaceWFFile;
+
+  surfaceWFFile.open(surfaceWFFileName.data(), std::ofstream::trunc);
+  if (!surfaceWFFile.is_open()) {
+    std::cout << "ERROR! Could not open surface wave-function file. "
+              << "Check if directory exists: " << surfaceWFFileName.data()
+              << std::endl;
+    exit(1);
+  }
+
+  for (int iN = 1; iN <= fConfig->maxPrincipalQN; iN++) {
+    for (int iK = fConfig->kBounds[0]; iK <= fConfig->kBounds[1]; iK++) {
+      if (iK == 0 || iK < -iN || iK > iN - 1)
+        continue;
+      std::string stringE = "E("+std::to_string(iN) + ","+std::to_string(iK) + ")";
+      std::string stringProb = "Prob("+std::to_string(iN) + ","+std::to_string(iK)+")";
+
+      surfaceWFFile.width(14);
+      surfaceWFFile << stringE.data();
+      surfaceWFFile.width(14);
+      surfaceWFFile << stringProb.data();
+    }
+  }
+  surfaceWFFile << std::endl;
   // grid
   sgrid(radwf.RAD, DR0, &rn, &r2, &drn, &radwf.NGP, &nMaxPoints, &iERR);
   if (iERR > 0) {
@@ -373,6 +408,7 @@ void radial_interface::SolveBoundStates() {
   }
 
   // actual computation
+  std::vector<double> surfaceData(0);
   for (int iN = 1; iN <= fConfig->maxPrincipalQN; iN++) {
     std::cout << "Computing for n = " << iN << "\n";
     int nValue = iN;
@@ -380,7 +416,40 @@ void radial_interface::SolveBoundStates() {
     for (int iK = fConfig->kBounds[0]; iK <= fConfig->kBounds[1]; iK++) {
       if (iK == 0 || iK < -iN || iK > iN - 1)
         continue;
-      int         kValue = iK;
+      int kValue = iK;
+
+      std::cout << " ... k = " << iK << "\n";
+
+      // double e = -1*std::pow(fConfig->zParent, 2.)/(2.0 * iN * iN);
+      double e =
+        -1. * (electronMass / e0) *
+        (1. -
+         1. / std::sqrt(1. + std::pow(fineStructure * fConfig->zParent, 2) /
+                               std::pow(iN - std::abs(iK) +
+                                          std::sqrt(iK * iK -
+                                                    std::pow(fineStructure *
+                                                               fConfig->zParent,
+                                                             2.)),
+                                        2)));
+      std::cout << "   Trial energy " << std::scientific << e * e0 << "MeV\n";
+      dbound(&e, &eps, &nValue, &kValue);
+      std::cout << "   Bound energy " << std::scientific << e * e0 << "MeV\n";
+
+      // surface data
+      std::vector<double> pqSurf(0);
+      FindPQSurface(pqSurf);
+
+      double probabilitySurface =
+        std::pow(hc / (electronMass * a0), 3) *
+        std::pow(a0 / fConfig->nuclearRadius, 2.) *
+        (pqSurf[0] * pqSurf[0] + pqSurf[1] * pqSurf[1]);
+
+      surfaceData.push_back(e * e0);
+      surfaceData.push_back(probabilitySurface);
+
+      if (!fConfig->writeWF)
+        continue;
+
       std::string boundWFFileName =
         "../Nuclei/" + fConfig->nucleusName + "/" + fConfig->nucleusName + "_" +
         fConfig->wfType + "_" + fConfig->potentialType + "_screening" +
@@ -389,19 +458,6 @@ void radial_interface::SolveBoundStates() {
 
       std::ofstream boundWFFile;
       boundWFFile.open(boundWFFileName, std::ofstream::trunc);
-
-      std::cout << " ... k = " << iK << "\n";
-
-      // double e = -1*std::pow(fConfig->zParent, 2.)/(2.0 * iN * iN);
-      double e =-1. * (electronMass / e0) *
-        (1. - 
-         1. / std::sqrt(
-           1. + std::pow(fineStructure * fConfig->zParent, 2) / 
-           std::pow(iN - std::abs(iK) + 
-            std::sqrt(iK * iK - std::pow(fineStructure * fConfig->zParent, 2.)), 2)));
-      std::cout << "   Trial energy " << std::scientific << e * e0 << "MeV\n";
-      dbound(&e, &eps, &nValue, &kValue);
-      std::cout << "   Bound energy " << std::scientific << e * e0 << "MeV\n";
 
       boundWFFile << std::scientific << e * e0 << std::endl;
 
@@ -413,13 +469,15 @@ void radial_interface::SolveBoundStates() {
         }
       }
 
-      WriteBoundWFFile(iMaxR, boundWFFile);
+      WriteRadialWFFile(iMaxR, boundWFFile);
       boundWFFile.close();
     }
   }
+
+  WriteSurfWFLine(0., surfaceData, surfaceWFFile);
 }
 
-void radial_interface::WriteBoundWFFile(int irMax, std::ofstream &file) {
+void radial_interface::WriteRadialWFFile(int irMax, std::ofstream &file) {
 
   file.width(7);
   file << "R ";
