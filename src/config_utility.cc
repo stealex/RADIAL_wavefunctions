@@ -15,8 +15,26 @@ config_utility *config_utility::GetInstance(){
     return fInstance;
 }
 
-config_utility::config_utility(){
-
+config_utility::config_utility():
+processName(""),
+nucleusName(""),
+wfType(""),
+potentialType(""),
+zParent(0.),
+aParent(0.),
+maximumRadius(0.),
+minimumRadius(0.),
+maximalEnergy(0.),
+nEnergyPoints(0),
+nRadialPoints(0),
+maxPrincipalQN(0),
+minPrincipalQN(0),
+applyScreening(false),
+writeWF(false),
+nuclearRadius(0.)
+{
+  kBounds[0]=0;
+  kBounds[1]=0;
 }
 
 config_utility::~config_utility(){
@@ -133,6 +151,11 @@ void config_utility::Initialize(const std::string &configFileName){
             tokens.clear();
             continue;
         }
+        if (tokens[0].find("minPrincipalQN") != std::string::npos){
+            minPrincipalQN = std::atoi(tokens[1].data());
+            tokens.clear();
+            continue;
+        }
 
     }
 
@@ -152,7 +175,7 @@ void config_utility::Initialize(const std::string &configFileName){
         }
     }
     if (wfType.find("bound") != std::string::npos){
-        std::cout << "Will compute for n up to " << maxPrincipalQN << std::endl;
+        std::cout << "Will compute for n from " << minPrincipalQN << " up to " << maxPrincipalQN << std::endl;
     }
     configFile.close();
     std::cout << "... done reading configuration" << std::endl << std::endl;

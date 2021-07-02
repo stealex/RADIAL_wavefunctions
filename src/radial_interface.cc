@@ -239,8 +239,10 @@ void radial_interface::SolveScatteringStates() {
 
     double waveLength =
       2.0 * pi / std::sqrt(e * (2.0 + e * fineStructure * fineStructure));
-    double drn = waveLength / 40.0;
-    double rn  = drn * (radwf_.NGP - 300.);
+    // double drn = waveLength / 40.0;
+    // double rn  = drn * (radwf.NGP - 300.);
+    double rn = fConfig->maximumRadius/a0;
+    double drn = rn/(radwf.NGP - 300);
     double r2  = 1.E-7;
 
     int iERR;
@@ -288,13 +290,13 @@ void radial_interface::SolveScatteringStates() {
       radFile << std::scientific << e * e0 << std::endl;
       radFile << std::scientific << phase << std::endl;
 
-      int irMax = -1;
-      for (int i = radwf.NGP - 1; i >= 0; i--) {
-        if (abs(radwf.P[i]) > 1.E-35) {
-          irMax = i;
-          break;
-        }
-      }
+      int irMax = radwf.NGP - 1;
+      // for (int i = radwf.NGP - 1; i >= 0; i--) {
+      //   if (abs(radwf.P[i]) > 1.E-35) {
+      //     irMax = i;
+      //     break;
+      //   }
+      // }
 
       WriteRadialWFFile(irMax, radFile);
       radFile.close();
@@ -363,9 +365,9 @@ void radial_interface::FindPQSurface(std::vector<double> &pq) {
 void radial_interface::SolveBoundStates() {
   // setup for bound states computation
   radwf.NGP = fConfig->nRadialPoints;
-  double rn = 10.0; // atomic units
+  double rn = fConfig->maximumRadius/a0; // atomic units
   double DR0[NDIM];
-  double r2  = 1.0E-6; // atomic units. Must be larger than 1E-8
+  double r2  = fConfig->minimumRadius/a0; // atomic units. Must be larger than 1E-8
   double drn = 1.0;
   int    iERR;
   int    nMaxPoints = NDIM;
@@ -387,7 +389,7 @@ void radial_interface::SolveBoundStates() {
     exit(1);
   }
 
-  for (int iN = 1; iN <= fConfig->maxPrincipalQN; iN++) {
+  for (int iN = fConfig->minPrincipalQN; iN <= fConfig->maxPrincipalQN; iN++) {
     for (int iK = fConfig->kBounds[0]; iK <= fConfig->kBounds[1]; iK++) {
       if (iK == 0 || iK < -iN || iK > iN - 1)
         continue;
@@ -409,7 +411,7 @@ void radial_interface::SolveBoundStates() {
 
   // actual computation
   std::vector<double> surfaceData(0);
-  for (int iN = 1; iN <= fConfig->maxPrincipalQN; iN++) {
+  for (int iN = fConfig->minPrincipalQN; iN <= fConfig->maxPrincipalQN; iN++) {
     std::cout << "Computing for n = " << iN << "\n";
     int nValue = iN;
 

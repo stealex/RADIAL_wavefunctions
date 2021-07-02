@@ -22,6 +22,7 @@ class config_utility{
         int nRadialPoints;
         int kBounds[2];
         int maxPrincipalQN;
+        int minPrincipalQN;
         bool applyScreening;
         bool writeWF;
 
