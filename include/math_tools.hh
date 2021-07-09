@@ -5,7 +5,7 @@
 class math_tools{
     public:
         static math_tools *GetInstance();
-        void ComputeEnergyPoints(int nPoints, double maxVal, std::vector<double> &energyPoints);
+        void ComputeEnergyPoints(int nPoints, double minVal, double maxVal, std::vector<double> &energyPoints);
         void GLNodesAndWeights(int nPoints);
         void Legangl(int n, double x, std::vector<double> &fx);
 

@@ -28,12 +28,12 @@ math_tools::~math_tools(){
     glWeights.clear();
 }
 
-void math_tools::ComputeEnergyPoints(int nPoints, double maxValue, std::vector<double> &energyPoints){
+void math_tools::ComputeEnergyPoints(int nPoints, double minValue, double maxValue, std::vector<double> &energyPoints){
     if (energyPoints.size() != 0) energyPoints.clear();
     energyPoints.resize(nPoints);
 
     double eMaxLog = std::log10(maxValue);
-    double eMinLog = -6.0;
+    double eMinLog = std::log10(minValue);
     double de = (eMaxLog - eMinLog)/(nPoints-1.);
 
     for (int i = 0; i < nPoints; i++){

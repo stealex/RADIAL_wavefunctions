@@ -17,7 +17,8 @@ class config_utility{
         double aParent;
         double maximumRadius;
         double minimumRadius;
-        double maximalEnergy;
+        double minimumEnergy;
+        double maximumEnergy;
         int nEnergyPoints;
         int nRadialPoints;
         int kBounds[2];

@@ -24,7 +24,8 @@ zParent(0.),
 aParent(0.),
 maximumRadius(0.),
 minimumRadius(0.),
-maximalEnergy(0.),
+minimumEnergy(0.),
+maximumEnergy(0.),
 nEnergyPoints(0),
 nRadialPoints(0),
 maxPrincipalQN(0),
@@ -123,8 +124,13 @@ void config_utility::Initialize(const std::string &configFileName){
             std::cout << "apply screening correction" <<std::endl;
             continue;
         }
+        if (tokens[0].find("minimumEnergy") != std::string::npos){
+            minimumEnergy = std::atof(tokens[1].data());
+            tokens.clear();
+            continue;
+        }
         if (tokens[0].find("maximalEnergy") != std::string::npos){
-            maximalEnergy = std::atof(tokens[1].data());
+            maximumEnergy = std::atof(tokens[1].data());
             tokens.clear();
             continue;
         }
@@ -166,7 +172,7 @@ void config_utility::Initialize(const std::string &configFileName){
             std::cerr << "ERROR! Wrong configuration. Bound states only for EC" << std::endl;
             exit(1);
         }
-        std::cout << "Maximal energy = " << maximalEnergy << " MeV" << std::endl;
+        std::cout << "Minimum energy = " << minimumEnergy << "; Maximal energy = " << maximumEnergy << " MeV" << std::endl;
         std::cout << "Number of energy points = " << nEnergyPoints << std::endl;
     }
     if (writeWF){

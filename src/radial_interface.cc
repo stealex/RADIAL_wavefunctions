@@ -65,7 +65,8 @@ void radial_interface::Initialize() {
   math_tools *mathInstance = math_tools::GetInstance();
   if (fConfig->wfType.find("scattering") != std::string::npos) {
     mathInstance->ComputeEnergyPoints(fConfig->nEnergyPoints,
-                                      fConfig->maximalEnergy, energyPoints);
+                                      fConfig->minimumEnergy, fConfig->maximumEnergy,
+                                      energyPoints);
   }
 
   // potential
