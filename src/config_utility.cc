@@ -72,23 +72,23 @@ void config_utility::Initialize(const std::string &configFileName){
             std::cout << "Process Name = " << fInstance->processName.data() << std::endl;
             continue;
         }
-        if (tokens[0].find("nucleusName") != std::string::npos){
+        else if (tokens[0].find("nucleusName") != std::string::npos){
             nucleusName = tokens[1];
             tokens.clear();
             std::cout << "Nucleus Name = " << fInstance->nucleusName.data() << std::endl;
             continue;
         }
-        if (tokens[0].find("zParent") != std::string::npos){
+        else if (tokens[0].find("zParent") != std::string::npos){
             zParent = std::atoi(tokens[1].data());
             tokens.clear();
             continue;
         }
-        if (tokens[0].find("aParent") != std::string::npos){
+        else if (tokens[0].find("aParent") != std::string::npos){
             aParent = std::atoi(tokens[1].data());
             tokens.clear();
             continue;
         }
-        if (tokens[0].find("radiusBounds") != std::string::npos){
+        else if (tokens[0].find("radiusBounds") != std::string::npos){
             minimumRadius = std::atof(tokens[1].data());
             maximumRadius = std::atof(tokens[2].data());
             tokens.clear();
@@ -96,25 +96,25 @@ void config_utility::Initialize(const std::string &configFileName){
             " max " << fInstance->maximumRadius << " fm" <<std::endl;
             continue;
         }
-        if (tokens[0].find("nRadialPoints") != std::string::npos){
+        else if (tokens[0].find("nRadialPoints") != std::string::npos){
             nRadialPoints = std::atoi(tokens[1].data());
             tokens.clear();
             std::cout << "Number of radial points = " << fInstance->nRadialPoints << std::endl;
             continue;
         }
-        if (tokens[0].find("wavefunctionsType") != std::string::npos){
+        else if (tokens[0].find("wavefunctionsType") != std::string::npos){
             wfType = tokens[1];
             tokens.clear();
             std::cout << "Will compute " << fInstance->wfType.data() << " wavefunctions" <<std::endl;
             continue;
         }
-        if (tokens[0].find("potentialType") != std::string::npos){
+        else if (tokens[0].find("potentialType") != std::string::npos){
             potentialType = tokens[1];
             tokens.clear();
             std::cout << "Will use " << fInstance->potentialType.data() << " potential" <<std::endl;
             continue;
         }
-        if (tokens[0].find("applyScreening") != std::string::npos){
+        else if (tokens[0].find("applyScreening") != std::string::npos){
             applyScreening = std::atoi(tokens[1].data());
             tokens.clear();
             std::cout << "Will ";
@@ -124,27 +124,27 @@ void config_utility::Initialize(const std::string &configFileName){
             std::cout << "apply screening correction" <<std::endl;
             continue;
         }
-        if (tokens[0].find("minimumEnergy") != std::string::npos){
+        else if (tokens[0].find("minimumEnergy") != std::string::npos){
             minimumEnergy = std::atof(tokens[1].data());
             tokens.clear();
             continue;
         }
-        if (tokens[0].find("maximalEnergy") != std::string::npos){
+        else if (tokens[0].find("maximumEnergy") != std::string::npos){
             maximumEnergy = std::atof(tokens[1].data());
             tokens.clear();
             continue;
         }
-        if (tokens[0].find("nEnergyPoints") != std::string::npos){
+        else if (tokens[0].find("nEnergyPoints") != std::string::npos){
             nEnergyPoints = std::atoi(tokens[1].data());
             tokens.clear();
             continue;
         }
-        if (tokens[0].find("writeWF") != std::string::npos){
+        else if (tokens[0].find("writeWF") != std::string::npos){
             writeWF = std::atoi(tokens[1].data());
             tokens.clear();
             continue;
         }
-        if (tokens[0].find("kBounds") != std::string::npos){
+        else if (tokens[0].find("kBounds") != std::string::npos){
             kBounds[0] = std::atoi(tokens[1].data());
             kBounds[1] = std::atoi(tokens[2].data());
             tokens.clear();
@@ -152,17 +152,21 @@ void config_utility::Initialize(const std::string &configFileName){
              " and " << fInstance->kBounds[1] << std::endl;
             continue;
         }
-        if (tokens[0].find("maxPrincipalQN") != std::string::npos){
+        else if (tokens[0].find("maxPrincipalQN") != std::string::npos){
             maxPrincipalQN = std::atoi(tokens[1].data());
             tokens.clear();
             continue;
         }
-        if (tokens[0].find("minPrincipalQN") != std::string::npos){
+        else if (tokens[0].find("minPrincipalQN") != std::string::npos){
             minPrincipalQN = std::atoi(tokens[1].data());
             tokens.clear();
             continue;
         }
-
+        else{
+            std::cout << "Unknown parameter: "<< tokens[0] << ". Aborting..." << std::endl;
+            tokens.clear();
+            exit(0);
+        }
     }
 
     std::cout << "Parent nucleus: Z = " << zParent <<
