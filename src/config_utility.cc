@@ -20,6 +20,8 @@ processName(""),
 nucleusName(""),
 wfType(""),
 potentialType(""),
+potentialRepository(""),
+potentialFileName(""),
 zParent(0.),
 aParent(0.),
 maximumRadius(0.),
@@ -113,6 +115,18 @@ void config_utility::Initialize(const std::string &configFileName){
             tokens.clear();
             std::cout << "Will use " << fInstance->potentialType.data() << " potential" <<std::endl;
             continue;
+        }
+        else if (tokens[0].find("potentialRepository") != std::string::npos){
+          potentialRepository = tokens[1];
+          tokens.clear();
+          std::cout << "Potential repository: " << fInstance->potentialRepository.data() << std::endl;
+          continue;
+        }
+        else if (tokens[0].find("potentialFileName") != std::string::npos){
+          potentialFileName = tokens[1];
+          tokens.clear();
+          std::cout << "Potential prefix: " << fInstance->potentialFileName.data() << std::endl;
+          continue;
         }
         else if (tokens[0].find("applyScreening") != std::string::npos){
             applyScreening = std::atoi(tokens[1].data());
