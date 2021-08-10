@@ -22,6 +22,8 @@ class radial_interface{
         void WriteRadialWFFile(int irMax,std::ofstream &file);
         void FindPQSurface(std::vector<double> &pq);
 
+        void ComputeChargedSpherePotential(double radius, double zCharge);
+        void ReadPotentialFile(std::ifstream &file);
     private:
         radial_interface();
         virtual ~radial_interface();
