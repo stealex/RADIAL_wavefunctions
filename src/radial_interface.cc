@@ -131,8 +131,7 @@ void radial_interface::ObtainPotential(double zPotential) {
     std::string potFileName = fConfig->potentialRepository + "/" + fConfig->potentialFileName +
                               "_" + fConfig->nucleusName + ".dat";
     // for debug.
-    std::ifstream potFile;
-    potFile.open(potFileName.data());
+    std::ifstream potFile(potFileName.data());
     if (!potFile.is_open()){
       std::cout
         << "ERROR! could not open potential file: " << potFileName.data()
@@ -171,10 +170,13 @@ void radial_interface::ComputeChargedSpherePotential(double rNuc, double zPotent
 
 void radial_interface::ReadPotentialFile(std::ifstream &file){
   double r, rv;
+  rValues.clear();
+  rvValues.clear();
   while(file >> r >> rv){
     rValues.push_back(r);
     rvValues.push_back(rv);
   }
+  fConfig->nRadialPoints = (int) rValues.size();
   std::cout << "Done reading potential from file" << std::endl;
 }
 
