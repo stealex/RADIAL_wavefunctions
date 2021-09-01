@@ -130,8 +130,7 @@ void radial_interface::ObtainPotential(double zPotential) {
   else if (fConfig->potentialType.find("FromFile") != std::string::npos){
     std::string potFileName = fConfig->potentialRepository + "/" + fConfig->potentialFileName;
     // for debug.
-    std::ifstream potFile;
-    potFile.open(potFileName.data());
+    std::ifstream potFile(potFileName.data());
     if (!potFile.is_open()){
       std::cout
         << "ERROR! could not open potential file: " << potFileName.data()
