@@ -13,6 +13,8 @@ class config_utility{
         std::string nucleusName;
         std::string wfType;
         std::string potentialType;
+        std::string potentialRepository;
+        std::string potentialFileName;
         double zParent;
         double aParent;
         double maximumRadius;
