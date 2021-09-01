@@ -128,8 +128,7 @@ void radial_interface::ObtainPotential(double zPotential) {
     ComputeChargedSpherePotential(rNuc, zPotential);
   }
   else if (fConfig->potentialType.find("FromFile") != std::string::npos){
-    std::string potFileName = fConfig->potentialRepository + "/" + fConfig->potentialFileName +
-                              "_" + fConfig->nucleusName + ".dat";
+    std::string potFileName = fConfig->potentialRepository + "/" + fConfig->potentialFileName;
     // for debug.
     std::ifstream potFile;
     potFile.open(potFileName.data());
@@ -171,10 +170,36 @@ void radial_interface::ComputeChargedSpherePotential(double rNuc, double zPotent
 
 void radial_interface::ReadPotentialFile(std::ifstream &file){
   double r, rv;
+  std::vector<double> rVecTmp;
+  std::vector<double> vVecTmp;
   while(file >> r >> rv){
-    rValues.push_back(r);
-    rvValues.push_back(rv);
+    rVecTmp.push_back(r);
+    vVecTmp.push_back(rv);
   }
+
+  std::cout << "Interpolating potential from file" << std::endl;
+  // spline interpolation of the screening
+  tk::spline vInterpolated(rVecTmp, vVecTmp);
+
+  std::cout << "Constructing radial grid and potential values" << std::endl;
+  
+  fConfig->minimumRadius = std::max(fConfig->minimumRadius, a0*rVecTmp[0]);
+  fConfig->maximumRadius = std::min(fConfig->maximumRadius, a0*rVecTmp[rVecTmp.size() - 1]);
+
+  double rMinLog = std::log10(fConfig->minimumRadius);
+  double rMaxLog = std::log10(fConfig->maximumRadius);
+  double dr      = (rMaxLog - rMinLog) / (fConfig->nRadialPoints - 1.);
+
+  rValues.push_back(0.);
+  for (int i = 1; i < fConfig->nRadialPoints; i++) {
+    rValues.push_back(std::pow(10., rMinLog + i * dr) / a0);
+  }
+
+  rvValues.push_back(0.);
+  for (size_t i = 1; i < rValues.size(); i++) {
+    rvValues.push_back(vInterpolated(rValues[i]));
+  }
+
   std::cout << "Done reading potential from file" << std::endl;
 }
 
