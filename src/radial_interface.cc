@@ -344,12 +344,6 @@ void radial_interface::SolveScatteringStates() {
         fConfig->wfType + "_radial_" + fConfig->potentialType + "_screening" +
         std::to_string(fConfig->applyScreening) + "_" + fConfig->processName +
         "_iE" + std::to_string(iEnergy) + "_k" + std::to_string(iK) + ".dat";
-      std::ofstream radFile;
-      radFile.open(radFileName.data(), std::ofstream::trunc);
-
-      radFile << std::scientific << e * e0 << std::endl;
-      radFile << std::scientific << phase << std::endl;
-
       int irMax = radwf.NGP - 1;
       // for (int i = radwf.NGP - 1; i >= 0; i--) {
       //   if (abs(radwf.P[i]) > 1.E-35) {
@@ -358,8 +352,7 @@ void radial_interface::SolveScatteringStates() {
       //   }
       // }
 
-      WriteRadialWFFile(irMax, radFile);
-      radFile.close();
+      WriteRadialWFFile(irMax, e*e0, radFileName, phase);
     }
 
     WriteSurfWFLine(energyPoints[iEnergy] + electronMass, surfWF,
@@ -518,11 +511,7 @@ void radial_interface::SolveBoundStates() {
         std::to_string(fConfig->applyScreening) + "_" + fConfig->processName +
         "_n" + std::to_string(iN) + "_k" + std::to_string(iK) + ".dat";
 
-      std::ofstream boundWFFile;
-      boundWFFile.open(boundWFFileName, std::ofstream::trunc);
-
-      boundWFFile << std::scientific << e * e0 << std::endl;
-
+      
       int iMaxR = -1;
       for (int i = radwf.NGP - 1; i >= 0; i--) {
         if (abs(radwf.P[i]) > 1.E-35) {
@@ -531,43 +520,35 @@ void radial_interface::SolveBoundStates() {
         }
       }
 
-      WriteRadialWFFile(iMaxR, boundWFFile);
-      boundWFFile.close();
+      WriteRadialWFFile(iMaxR, e*e0, boundWFFileName.data());
     }
   }
 
   WriteSurfWFLine(0., surfaceData, surfaceWFFile);
 }
 
-void radial_interface::WriteRadialWFFile(int irMax, std::ofstream &file) {
+void radial_interface::WriteRadialWFFile(int irMax, double energy, const std::string &boundWFFileName, double phase) {
+  std::ofstream file(boundWFFileName.data(), std::ios::out | std::ios::binary);
+  
 
-  file.width(7);
-  file << "R ";
-  file.width(7);
-  file << " ";
-
-  std::vector<std::string> components = {"P", "Q"};
-  for (int iComp = 0; iComp < 2; iComp++) {
-    file.width(10);
-    file << components[iComp].data();
+  BoundRadialWFFileHeader hBound;
+  ScatteringRadialWFFileHeader hScatter;
+  if (fConfig->wfType.find("scattering") != std::string::npos){
+    hScatter.energy = energy;
+    hScatter.phase = phase;
+    file.write((char*) &hScatter, sizeof(ScatteringRadialWFFileHeader));
   }
-  file << std::endl;
-
-  // write the values of R P and Q
-  for (int iR = 0; iR < irMax; iR++) {
-    file.precision(6);
-    file.width(14);
-    file << radwf.RAD[iR];
-
-    file.precision(6);
-    file.width(14);
-    file << std::scientific;
-    file << radwf.P[iR];
-    file.precision(6);
-    file.width(14);
-    file << std::scientific;
-    file << radwf.Q[iR];
-
-    file << std::endl;
+  else{
+    hBound.energy = energy;
+    file.write((char*) &hBound, sizeof(BoundRadialWFFileHeader));
   }
+
+  RadialWFFileLine line;
+  for (int iR = 0; iR < irMax; iR++){
+    line.r = radwf.RAD[iR];
+    line.p = radwf.P[iR];
+    line.q = radwf.Q[iR];
+    file.write((char*) &line, sizeof(RadialWFFileLine));
+  }
+  file.close();
 }
