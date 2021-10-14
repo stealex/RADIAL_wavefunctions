@@ -8,6 +8,19 @@
 
 class radial_interface{
     public:
+        struct BoundRadialWFFileHeader{
+            double energy;
+        };
+        struct ScatteringRadialWFFileHeader{
+            double energy;
+            double phase;
+        };
+        struct RadialWFFileLine{
+            double r;
+            double p;
+            double q;
+        };
+
         static radial_interface *GetInstance();
 
         void Initialize();
@@ -19,7 +32,7 @@ class radial_interface{
         void SolveBoundStates();
 
         void WriteSurfWFLine(double e, std::vector<double> vals, std::ofstream &file);
-        void WriteRadialWFFile(int irMax,std::ofstream &file);
+        void WriteRadialWFFile(int irMax, double e, const std::string &fileName, double phase = 0.);
         void FindPQSurface(std::vector<double> &pq);
 
         void ComputeChargedSpherePotential(double radius, double zCharge);
