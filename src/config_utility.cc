@@ -22,6 +22,7 @@ wfType(""),
 potentialType(""),
 potentialRepository(""),
 potentialFileName(""),
+wfFileNameSeed(""),
 zParent(0.),
 aParent(0.),
 maximumRadius(0.),
@@ -127,6 +128,18 @@ void config_utility::Initialize(const std::string &configFileName){
           tokens.clear();
           std::cout << "Potential prefix: " << fInstance->potentialFileName.data() << std::endl;
           continue;
+        }
+        else if (tokens[0].find("wfFileNameSeed") != std::string::npos){
+          if (tokens.size() == 2){
+              wfFileNameSeed = tokens[1];
+              std::cout << "Wave function file names will contain " << wfFileNameSeed.data() << std::endl;
+          }
+          else{
+              wfFileNameSeed = "";
+              std::cout << "Default naming for wave function files" << std::endl;
+          }
+          continue;
+
         }
         else if (tokens[0].find("applyScreening") != std::string::npos){
             applyScreening = std::atoi(tokens[1].data());
