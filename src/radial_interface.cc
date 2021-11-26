@@ -247,9 +247,10 @@ void radial_interface::SolveScatteringStates() {
   radwf.NGP = fConfig->nRadialPoints;
 
   // Prepare file for writting wave-functions on surface
+  std::string nameSeed = fConfig->wfFileNameSeed == "" ? fConfig->potentialType : fConfig->wfFileNameSeed;
   std::string surfaceWFFileName =
     "../Nuclei/" + fConfig->nucleusName + "/" + fConfig->nucleusName +
-    "_surface_" + fConfig->wfType + "_" + fConfig->potentialType +
+    "_surface_" + fConfig->wfType + "_" + nameSeed +
     "_screening" + std::to_string(fConfig->applyScreening) + "_" +
     fConfig->processName + ".dat";
   std::ofstream surfaceWFFile;
@@ -341,7 +342,7 @@ void radial_interface::SolveScatteringStates() {
 
       std::string radFileName =
         "../Nuclei/" + fConfig->nucleusName + "/" + fConfig->nucleusName + "_" +
-        fConfig->wfType + "_radial_" + fConfig->potentialType + "_screening" +
+        fConfig->wfType + "_radial_" + nameSeed + "_screening" +
         std::to_string(fConfig->applyScreening) + "_" + fConfig->processName +
         "_iE" + std::to_string(iEnergy) + "_k" + std::to_string(iK) + ".dat";
       int irMax = radwf.NGP - 1;
@@ -427,9 +428,10 @@ void radial_interface::SolveBoundStates() {
   double eps        = 1.E-12;
 
   // prepare file for writing wave-functions on surface
+  std::string nameSeed = fConfig->wfFileNameSeed == "" ? fConfig->potentialType : fConfig->wfFileNameSeed;
   std::string surfaceWFFileName =
     "../Nuclei/" + fConfig->nucleusName + "/" + fConfig->nucleusName +
-    "_surface_" + fConfig->wfType + "_" + fConfig->potentialType +
+    "_surface_" + fConfig->wfType + "_" + nameSeed +
     "_screening" + std::to_string(fConfig->applyScreening) + "_" +
     fConfig->processName + ".dat";
   std::ofstream surfaceWFFile;
@@ -507,7 +509,7 @@ void radial_interface::SolveBoundStates() {
 
       std::string boundWFFileName =
         "../Nuclei/" + fConfig->nucleusName + "/" + fConfig->nucleusName + "_" +
-        fConfig->wfType + "_" + fConfig->potentialType + "_screening" +
+        fConfig->wfType + "_" + nameSeed + "_screening" +
         std::to_string(fConfig->applyScreening) + "_" + fConfig->processName +
         "_n" + std::to_string(iN) + "_k" + std::to_string(iK) + ".dat";
 

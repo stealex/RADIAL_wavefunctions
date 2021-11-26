@@ -128,6 +128,16 @@ void config_utility::Initialize(const std::string &configFileName){
           std::cout << "Potential prefix: " << fInstance->potentialFileName.data() << std::endl;
           continue;
         }
+        else if (tokens[0].find("wfFileNameSeed") != std::string::npos){
+          if (tokens[1] != ""){
+              wfFileNameSeed = tokens[1];
+              std::cout << "Wave function file names will contain " << wfFileNameSeed.data() << std::endl;
+          }
+          else{
+              std::cout << "Default naming for wave function files" << std::endl;
+          }
+          continue;
+        }
         else if (tokens[0].find("applyScreening") != std::string::npos){
             applyScreening = std::atoi(tokens[1].data());
             tokens.clear();
