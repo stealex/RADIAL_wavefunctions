@@ -13,3 +13,5 @@ include_directories(include)
 link_directories(${RadialWaveFunctions_SOURCE_DIR}/src)
 add_executable(Radial_WF main.cc)
 target_link_libraries(Radial_WF RadialInterface RadialFortran)
+
+add_executable(DHFS ${RadialWaveFunctions_SOURCE_DIR}/src/DHFS.f)

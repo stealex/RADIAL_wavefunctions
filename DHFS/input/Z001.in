@@ -1,0 +1,7 @@
+C1 (Hydrogen, Z= 1. Neutral atom.                               )  Title
+C2 (H ,  1,  1)       Chemical symbol, atomic number Z, number of shells
+C3 ( 1, 0, 1, 1.000)   1                     n, l, 2j, occupation number
+C4 (   1.0079)                                 Aw (atomic weight, g/mol)
+C5 (   1.5000)          Exchange parameter (1.5, Slater; 1.0, Kohn-Sham)
+C6 (  75.0000)             RN, outer radius; -Rws for Wigner-Seitz atoms
+C7 (1000,Eh)        Number of radial grid points, energy unit (Eh or Ry)

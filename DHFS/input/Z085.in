@@ -1,0 +1,30 @@
+C1 (Astatine, Z= 85. Neutral atom.                              )  Title
+C2 (At, 85, 24)       Chemical symbol, atomic number Z, number of shells
+C3 ( 1, 0, 1, 2.000)   2  He                 n, l, 2j, occupation number
+C3 ( 2, 0, 1, 2.000)   4                     n, l, 2j, occupation number
+C3 ( 2, 1, 1, 2.000)   6                     n, l, 2j, occupation number
+C3 ( 2, 1, 3, 4.000)  10  Ne                 n, l, 2j, occupation number
+C3 ( 3, 0, 1, 2.000)  12                     n, l, 2j, occupation number
+C3 ( 3, 1, 1, 2.000)  14                     n, l, 2j, occupation number
+C3 ( 3, 1, 3, 4.000)  18  Ar                 n, l, 2j, occupation number
+C3 ( 3, 2, 3, 4.000)  22                     n, l, 2j, occupation number
+C3 ( 3, 2, 5, 6.000)  28                     n, l, 2j, occupation number
+C3 ( 4, 0, 1, 2.000)  30                     n, l, 2j, occupation number
+C3 ( 4, 1, 1, 2.000)  32                     n, l, 2j, occupation number
+C3 ( 4, 1, 3, 4.000)  36  Kr                 n, l, 2j, occupation number
+C3 ( 4, 2, 3, 4.000)  40                     n, l, 2j, occupation number
+C3 ( 4, 2, 5, 6.000)  46                     n, l, 2j, occupation number
+C3 ( 5, 0, 1, 2.000)  48                     n, l, 2j, occupation number
+C3 ( 5, 1, 1, 2.000)  50                     n, l, 2j, occupation number
+C3 ( 5, 1, 3, 4.000)  54  Xe                 n, l, 2j, occupation number
+C3 ( 4, 3, 5, 6.000)  60                     n, l, 2j, occupation number
+C3 ( 4, 3, 7, 8.000)  68                     n, l, 2j, occupation number
+C3 ( 5, 2, 3, 4.000)  72                     n, l, 2j, occupation number
+C3 ( 5, 2, 5, 6.000)  78                     n, l, 2j, occupation number
+C3 ( 6, 0, 1, 2.000)  80                     n, l, 2j, occupation number
+C3 ( 6, 1, 1, 2.000)  82                     n, l, 2j, occupation number
+C3 ( 6, 1, 3, 3.000)  85                     n, l, 2j, occupation number
+C4 ( 209.9871)                                 Aw (atomic weight, g/mol)
+C5 (   1.5000)          Exchange parameter (1.5, Slater; 1.0, Kohn-Sham)
+C6 (  75.0000)             RN, outer radius; -Rws for Wigner-Seitz atoms
+C7 (1000,Eh)        Number of radial grid points, energy unit (Eh or Ry)
