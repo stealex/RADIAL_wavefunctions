@@ -15,6 +15,37 @@ def move_dhfs_output(z:int, nuc):
 	os.system(f'mv potden.dat potden_{nuc:s}.dat')
 	os.system(f'mv rwavefcts.dat rwavefcts_{nuc:s}.dat')
 
+def make_potential_from_dhfs(nuc):
+	# read potential for initial nucleus
+	with open(f"potden_{nuc}.dat") as potden_file:
+		radius_tmp = []
+		rv_nuc_tmp = []
+		rv_el_tmp = []
+		rv_ex_tmp = []
+		rho_tmp = []
+		for line in potden_file.readlines():
+			if "#" in line:
+				continue
+			tokens = line.strip().split(" ")
+			tokens = list(filter(lambda a: a != '', tokens))
+			radius_tmp.append(float(tokens[0]))
+			rv_nuc_tmp.append(float(tokens[2]))
+			rv_el_tmp.append(float(tokens[3]))
+			rv_ex_tmp.append(float(tokens[4]))
+			rho_tmp.append(float(tokens[5]))
+		
+		radius = np.array(radius_tmp)
+		rv_nuc = np.array(rv_nuc_tmp)
+		rv_el = np.array(rv_el_tmp)
+		rv_ex = np.array(rv_ex_tmp)
+		rho = np.array(rho_tmp)
+
+		potential_with_Latter = rv_nuc+rv_el+rv_ex
+		potential_no_Latter = rv_nuc+rv_el - 1.5*((3./np.pi)**(1./3.))*radius*(rho**(1./3.))
+		
+		np.savetxt(f'potential_with_Latter_{nuc}.dat', np.c_[radius, potential_with_Latter])
+		np.savetxt(f'potential_no_Latter_{nuc}.dat', np.c_[radius, potential_no_Latter])
+
 
 project_base_dir = os.getcwd()
 
@@ -69,7 +100,7 @@ elif (process == "betaMinus") or (process == "2betaMinus"):
 	print("Writting dhfs input file for final nulcues ... ")
 	with open("dhfs_final.in", "w") as dhfs_final_file:
 		for line in dhfs_initial_lines:
-			if "C1" in line or "C2" in line or "":
+			if "C1" in line or "C2" in line:
 				line = line.replace(f'{z_initial: >3d}', f'{z_final: >3d}')
 				line = line.replace("Neutral atom", "Positive ion")
 				line = line.replace(str(initial_element.symbol), str(final_element.symbol))
@@ -90,8 +121,11 @@ elif (process == "betaMinus") or (process == "2betaMinus"):
 
 	move_dhfs_output(z_final, "final")
 	print("...done")
-	
+
 elif ( "betaPlus" in process):
 	print("betaPlus case not yet treated")
 else:
 	print("process not known. Check config file")
+
+make_potential_from_dhfs("initial")
+make_potential_from_dhfs("final")
