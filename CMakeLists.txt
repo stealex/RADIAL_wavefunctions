@@ -15,3 +15,15 @@ add_executable(Radial_WF main.cc)
 target_link_libraries(Radial_WF RadialInterface RadialFortran)
 
 add_executable(DHFS ${RadialWaveFunctions_SOURCE_DIR}/src/DHFS.f)
+
+# set(SCRIPTS 
+# 	dhfs.py
+# 	dhfs.ini)
+
+# foreach(_script ${SCRIPTS})
+# 	configure_file(
+# 		${PROJECT_SOURCE_DIR}/${_script}
+# 		${PROJECT_BINARY_DIR}/${_script}
+# 		COPYONLY
+# 		)
+# endforeach()
