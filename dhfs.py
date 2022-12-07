@@ -43,8 +43,8 @@ def make_potential_from_dhfs(nuc):
 		potential_with_Latter = rv_nuc+rv_el+rv_ex
 		potential_no_Latter = rv_nuc+rv_el - 1.5*((3./np.pi)**(1./3.))*radius*(rho**(1./3.))
 		
-		np.savetxt(f'potential_with_Latter_{nuc}.dat', np.c_[radius, potential_with_Latter])
-		np.savetxt(f'potential_no_Latter_{nuc}.dat', np.c_[radius, potential_no_Latter])
+		np.savetxt(f'potential_with_Latter_{nuc}.dat', np.c_[radius, potential_with_Latter], fmt='%15.8e')
+		np.savetxt(f'potential_no_Latter_{nuc}.dat', np.c_[radius, potential_no_Latter], fmt='%15.8e')
 
 
 project_base_dir = os.getcwd()
