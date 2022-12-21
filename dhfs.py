@@ -6,7 +6,11 @@ import shutil
 from mendeleev import element
 import re
 
-def move_dhfs_output(z:int, nuc):
+
+#
+#  Helper functions
+#
+def move_dhfs_output(z, nuc):
 	if (nuc != "initial") and ("final" not in nuc):
 		print("nuc parameter can be initial or contain daugher")
 		return
@@ -46,8 +50,70 @@ def make_potential_from_dhfs(nuc):
 		np.savetxt(f'potential_with_Latter_{nuc}.dat', np.c_[radius, potential_with_Latter], fmt='%15.8e')
 		np.savetxt(f'potential_no_Latter_{nuc}.dat', np.c_[radius, potential_no_Latter], fmt='%15.8e')
 
+def create_dirac_config(out_file_name, config):
+	with open("wavefunctions_initial_tmp.conf") as config_file_tmp:
+		lines = config_file_tmp.readlines()
+		config_file = open(out_file_name, 'w')
+		for line in lines:
+			if "processName= " in line:
+				line = "processName= " + config["DIRAC"]["processName"]+"\n"
+			
+			if "nucleusName= " in line:
+				line = "nucleusName= " + config["DIRAC"]["nucleusName"]+"\n"
+			if "zParent= " in line:
+				line = "zParent= " + config["DIRAC"]["zInitial"]+"\n"
+			if "aParent= " in line:
+				line = "aParent= " + config["DIRAC"]["aInitial"]+"\n"
+			
+			if "radiusBounds= " in line:
+				line = "radiusBounds= " + config["DIRAC"]["radiusBounds"]+"\n"
+			if "nRadialPoints= " in line:
+				line = "nRadialPoints= " + config["DIRAC"]["nRadialPoints"]+"\n"
+			
+			if "wavefunctionsType= " in line:
+				line = "wavefunctionsType= bound"+"\n"
+
+			if "potentialType= " in line:
+				line = "potentialType= FromFile"+"\n"
+			if "potentialRepository= " in line:
+				line = "potentialRepository= ./"+"\n"
+			if "potentialFileName= " in line:
+				line = f'potentialFileName= {str(config["DIRAC"]["potentialFileName"])} \n'
+
+			if "wfFileNameSeed= " in line:
+				line = f'wfFileNameSeed= {int(a_initial): >3d}{str(initial_element.symbol)}_{process}' +"\n"
+			if "outputDirectory= " in line:
+				line = "outputDirectory= " + config["DIRAC"]["outputDirectory"]
+
+			if "applyScreening= " in line:
+				line = "applyScreening= 0"+"\n"
+			
+			if "minimumEnergy= " in line:
+				line = "minimumEnergy= "+ config["DIRAC"]["minimumEnergy"]+"\n"
+			if "maxmimumEnergy= " in line:
+				line = "maximumEnergy= "+ config["DIRAC"]["maximumEnergy"]+"\n"
+			if "nEnergyPoints= " in line:
+				line = "nEnergyPoints= " + config["DIRAC"]["nEnergyPoints"]+"\n"
+			
+			if "writeWF= " in line:
+				line = "writeWF= "+config["DIRAC"]["writeWF"]+"\n"
+			if "kBounds= " in line:
+				line = "kBounds= "+config["DIRAC"]["kBounds"]+"\n"
+
+			if "minPrincipalQN= " in line:
+				line = "minPrincipalQN= "+config["DIRAC"]["minPrincipalQN"]+"\n"
+			if "maxPrincipalQN= " in line:
+				line = "maxPrincipalQN= "+config["DIRAC"]["maxPrincipalQN"]+"\n"
+
+			config_file.write(line)
+		config_file.close()
+
+#
+# Script main
+#
 
 project_base_dir = os.getcwd()
+print("base dir = ", project_base_dir)
 
 config = configparser.ConfigParser()
 config.read("dhfs.ini")
@@ -56,6 +122,7 @@ config.read("dhfs.ini")
 initial_nucleus = config["DIRAC"]["nucleusName"]
 process = config["DIRAC"]["processName"]
 z_initial = int(config["DIRAC"]["zInitial"])
+a_initial = int(config["DIRAC"]["aInitial"])
 initial_element = element(z_initial)
 
 # create directory to store results
@@ -67,7 +134,7 @@ except OSError as error:
 
 shutil.copy2(project_base_dir+"/build/DHFS", final_dir+"/DHFS")
 shutil.copy2(project_base_dir+"/build/constants.mod", final_dir+"/constants.mod")
-
+shutil.copy2(project_base_dir+"/build/Radial_WF", final_dir+"/Radial_WF")
 
 # copy the dhfs .in file to the final directory
 if int(config["DHFS"]["USE_STANDARD"]) == 1:
@@ -75,6 +142,8 @@ if int(config["DHFS"]["USE_STANDARD"]) == 1:
 	shutil.copyfile(repo+"/"+f'Z{z_initial:0>3d}.in', final_dir+"/dhfs_initial.in")
 else:
 	shutil.copyfile(str(config["INPUT_FILE"]), final_dir+"/dhfs_initial.in")
+
+shutil.copyfile(str(project_base_dir+"/wavefunctions.conf"), final_dir+"/wavefunctions_initial_tmp.conf")
 
 os.chdir(final_dir)
 
@@ -129,3 +198,34 @@ else:
 
 make_potential_from_dhfs("initial")
 make_potential_from_dhfs("final")
+
+# create config file for RADIAL initial nucleus
+# TODO: get rid of process name
+config["DIRAC"]["outputDirectory"] = "."
+config["DIRAC"]["wavefunctionsType"] = "bound"
+config["DIRAC"]["processName"] = "EC"
+
+if config["DHFS"]["LATTER_TAIL"] == 1:
+  config["DIRAC"]["potentialFileName"] = "potential_with_Latter_initial.dat"
+elif config["DHFS"]["LATTER_TAIL"] == 0:
+  config["DIRAC"]["potentialFileName"] = "potential_no_Latter_initial.dat"
+else:
+  print("WRONG configuration. LATTER_TAIL can be 0 or 1")
+  exit(1)
+
+create_dirac_config("wavefunctions_initial_with_Latter.conf", config)
+subprocess.run(["./Radial_WF", "wavefunctions_initial_with_Latter.conf"])
+
+
+# create config file for RADIAL final nucleus
+config["DIRAC"]["outputDirectory"] = "."
+if config["DHFS"]["LATTER_TAIL"] == 1:
+  config["DIRAC"]["potentialFileName"] = "potential_with_Latter_final.dat"
+elif config["DHFS"]["LATTER_TAIL"] == 0:
+  config["DIRAC"]["potentialFileName"] = "potential_no_Latter_final.dat"
+else:
+  print("WRONG configuration. LATTER_TAIL can be 0 or 1")
+  exit(1)
+
+create_dirac_config("wavefunctions_final_with_Latter.conf", config)
+subprocess.run(["./Radial_WF", "wavefunctions_final_with_Latter.conf"])
