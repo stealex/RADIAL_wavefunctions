@@ -23,6 +23,7 @@ potentialType(""),
 potentialRepository(""),
 potentialFileName(""),
 wfFileNameSeed(""),
+outputDirectory(""),
 zParent(0.),
 aParent(0.),
 maximumRadius(0.),
@@ -140,6 +141,17 @@ void config_utility::Initialize(const std::string &configFileName){
           }
           continue;
 
+        }
+        else if (tokens[0].find("outputDirectory") != std::string::npos){
+            if (tokens.size() == 2){
+                outputDirectory = tokens[1];
+                std::cout << "Will output everything in " << outputDirectory.data() << std::endl;
+            }
+            else{
+                outputDirectory = "";
+                std::cout << "Default output directory " << std::endl;
+            }
+            continue;
         }
         else if (tokens[0].find("applyScreening") != std::string::npos){
             applyScreening = std::atoi(tokens[1].data());
