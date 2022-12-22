@@ -83,7 +83,6 @@ def main():
   initial_nucleus = config["DIRAC"]["nucleusName"]
   process = config["DIRAC"]["processName"]
   z_initial = int(config["DIRAC"]["zInitial"])
-  a_initial = int(config["DIRAC"]["aInitial"])
   initial_element = element(z_initial)
 
   # create directory to store results
@@ -161,54 +160,47 @@ def main():
   dhfs_util.make_potential_from_dhfs("final")
 
   # create config file for RADIAL initial nucleus
-  config["DIRAC"]["outputDirectory"] = "."
-  config["DIRAC"]["wavefunctionsType"] = "bound"
-  config["DIRAC"]["processName"] = "EC"
-
+  initial_potential_file = ""
+  initial_wfFileName_seed = ""
+  final_potential_file = ""
+  final_wfFileName_seed = ""
   if config["DHFS"]["LATTER_TAIL"] == "1":
-    config["DIRAC"]["potentialFileName"] = "potential_with_Latter_initial.dat"
-    config["DIRAC"]["wfFileNameSeed"] = "initial_DHFS_LATTER_TAIL_1"
+    initial_potential_file = "potential_with_Latter_initial.dat"
+    initial_wfFileName_seed = "initial_DHFS_LATTER_TAIL_1"
+    final_potential_file = "potential_with_Latter_final.dat"
+    final_wfFileName_seed = "final_DHFS_LATTER_TAIL_1"
   elif config["DHFS"]["LATTER_TAIL"] == "0":
-    config["DIRAC"]["potentialFileName"] = "potential_no_Latter_initial.dat"
-    config["DIRAC"]["wfFileNameSeed"] = "initial_DHFS_LATTER_TAIL_0"
+    initial_potential_file = "potential_no_Latter_initial.dat"
+    initial_wfFileName_seed = "initial_DHFS_LATTER_TAIL_0"
+    final_potential_file = "potential_with_Latter_final.dat"
+    final_wfFileName_seed = "final_DHFS_LATTER_TAIL_0"
   else:
     print("WRONG configuration. LATTER_TAIL can be 0 or 1")
     exit(1)
+
+  config["DIRAC"]["outputDirectory"] = "."
+  config["DIRAC"]["wavefunctionsType"] = "bound"
+  config["DIRAC"]["processName"] = "EC"
+  config["DIRAC"]["potentialFileName"] = initial_potential_file
+  config["DIRAC"]["wfFileNameSeed"] = initial_wfFileName_seed
 
   create_dirac_config("wavefunctions_initial_with_Latter.conf", config)
   subprocess.run(["./Radial_WF", "wavefunctions_initial_with_Latter.conf"])
 
-
   # create config file for RADIAL final nucleus
 
   ## bound states
-  config["DIRAC"]["outputDirectory"] = "."
-  if config["DHFS"]["LATTER_TAIL"] == "1":
-    config["DIRAC"]["potentialFileName"] = "potential_with_Latter_final.dat"
-    config["DIRAC"]["wfFileNameSeed"] = "final_DHFS_LATTER_TAIL_1"
-  elif config["DHFS"]["LATTER_TAIL"] == "0":
-    config["DIRAC"]["potentialFileName"] = "potential_no_Latter_final.dat"
-    config["DIRAC"]["wfFileNameSeed"] = "final_DHFS_LATTER_TAIL_0"
-  else:
-    print("WRONG configuration. LATTER_TAIL can be 0 or 1")
-    exit(1)
+  config["DIRAC"]["potentialFileName"] = final_potential_file
+  config["DIRAC"]["wfFileNameSeed"] = final_wfFileName_seed
 
   create_dirac_config("wavefunctions_final_with_Latter.conf", config)
   subprocess.run(["./Radial_WF", "wavefunctions_final_with_Latter.conf"])
 
   ## scattering states
-  config["DIRAC"]["outputDirectory"] = "."
   config["DIRAC"]["wavefunctionsType"] = "scattering"
   config["DIRAC"]["processName"] = "betaMinus"
-  if config["DHFS"]["LATTER_TAIL"] == "1":
-    config["DIRAC"]["potentialFileName"] = "potential_with_Latter_final.dat"
-    config["DIRAC"]["wfFileNameSeed"] = "final_DHFS_LATTER_TAIL_1"
-  elif config["DHFS"]["LATTER_TAIL"] == "0":
-    config["DIRAC"]["potentialFileName"] = "potential_no_Latter_final.dat"
-    config["DIRAC"]["wfFileNameSeed"] = "final_DHFS_LATTER_TAIL_0"
-  else:
-    print("WRONG configuration. LATTER_TAIL can be 0 or 1")
-    exit(1)
+  config["DIRAC"]["potentialFileName"] = final_potential_file
+  config["DIRAC"]["wfFileNameSeed"] = final_wfFileName_seed
 
   create_dirac_config("wavefunctions_final_with_Latter_scattering.conf", config)
   subprocess.run(["./Radial_WF", "wavefunctions_final_with_Latter_scattering.conf"])
