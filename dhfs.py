@@ -5,50 +5,11 @@ import os
 import shutil
 from mendeleev import element
 import re
-
+from python_util import dhfs_util
 
 #
 #  Helper functions
 #
-def move_dhfs_output(z, nuc):
-	if (nuc != "initial") and ("final" not in nuc):
-		print("nuc parameter can be initial or contain daugher")
-		return
-	os.system(f'mv dhfs{z:0>3}.tab dhfs_{nuc:s}.tab')
-	os.system(f'mv dhfs.dat dhfs_{nuc:s}.dat')
-	os.system(f'mv potden.dat potden_{nuc:s}.dat')
-	os.system(f'mv rwavefcts.dat rwavefcts_{nuc:s}.dat')
-
-def make_potential_from_dhfs(nuc):
-	# read potential for initial nucleus
-	with open(f"potden_{nuc}.dat") as potden_file:
-		radius_tmp = []
-		rv_nuc_tmp = []
-		rv_el_tmp = []
-		rv_ex_tmp = []
-		rho_tmp = []
-		for line in potden_file.readlines():
-			if "#" in line:
-				continue
-			tokens = line.strip().split(" ")
-			tokens = list(filter(lambda a: a != '', tokens))
-			radius_tmp.append(float(tokens[0]))
-			rv_nuc_tmp.append(float(tokens[2]))
-			rv_el_tmp.append(float(tokens[3]))
-			rv_ex_tmp.append(float(tokens[4]))
-			rho_tmp.append(float(tokens[5]))
-		
-		radius = np.array(radius_tmp)
-		rv_nuc = np.array(rv_nuc_tmp)
-		rv_el = np.array(rv_el_tmp)
-		rv_ex = np.array(rv_ex_tmp)
-		rho = np.array(rho_tmp)
-
-		potential_with_Latter = rv_nuc+rv_el+rv_ex
-		potential_no_Latter = rv_nuc+rv_el - 1.5*((3./np.pi)**(1./3.))*radius*(rho**(1./3.))
-		
-		np.savetxt(f'potential_with_Latter_{nuc}.dat', np.c_[radius, potential_with_Latter], fmt='%15.8e')
-		np.savetxt(f'potential_no_Latter_{nuc}.dat', np.c_[radius, potential_no_Latter], fmt='%15.8e')
 
 def create_dirac_config(out_file_name, config):
 	with open("wavefunctions_initial_tmp.conf") as config_file_tmp:
@@ -152,7 +113,7 @@ def main():
   subprocess.run("./DHFS", stdin= dhfs_input_file)
   dhfs_input_file.close()
   dhfs_input_file = open("dhfs_initial.in")
-  move_dhfs_output(z_initial, "initial")
+  dhfs_util.move_dhfs_output(z_initial, "initial")
 
   # Create dhfs input files for final nucleus based on process and run DHFS
   if (process == "EC") or (process == "2EC"):
@@ -188,7 +149,7 @@ def main():
     subprocess.run("./DHFS", stdin= dhfs_final_file)
     dhfs_final_file.close()
 
-    move_dhfs_output(z_final, "final")
+    dhfs_util.move_dhfs_output(z_final, "final")
     print("...done")
 
   elif ( "betaPlus" in process):
@@ -196,8 +157,8 @@ def main():
   else:
     print("process not known. Check config file")
 
-  make_potential_from_dhfs("initial")
-  make_potential_from_dhfs("final")
+  dhfs_util.make_potential_from_dhfs("initial")
+  dhfs_util.make_potential_from_dhfs("final")
 
   # create config file for RADIAL initial nucleus
   config["DIRAC"]["outputDirectory"] = "."
