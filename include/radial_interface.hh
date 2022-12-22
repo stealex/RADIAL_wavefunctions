@@ -20,7 +20,7 @@ class radial_interface{
             double p;
             double q;
         };
-
+        
         static radial_interface *GetInstance();
 
         void Initialize();
@@ -37,6 +37,9 @@ class radial_interface{
 
         void ComputeChargedSpherePotential(double radius, double zCharge);
         void ReadPotentialFile(std::ifstream &file);
+
+        std::string CreateFileName(std::string placeOfComputation, int iEnergy, int iN, int iK);
+
     private:
         radial_interface();
         virtual ~radial_interface();

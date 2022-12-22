@@ -242,26 +242,61 @@ void radial_interface::SolveDirac() {
     SolveBoundStates();
 }
 
+std::string radial_interface::CreateFileName(std::string placeOfComputation, int iEnergy = 0, int iN = 0, int iK = 0){
+  std::string nameSeed = fConfig->wfFileNameSeed == "" ? fConfig->potentialType : fConfig->wfFileNameSeed; 
+  std::string outFileName = "";
+  std::string outputDirectory = fConfig->outputDirectory == ""? "../Nuclei" : fConfig->outputDirectory + "/";
+  outFileName += outputDirectory;
+
+  if (fConfig->outputDirectory == "")
+  {
+    outFileName += fConfig->nucleusName +
+      "_" + placeOfComputation + "_" + fConfig->wfType + "_" + nameSeed +
+      "_screening" + std::to_string(fConfig->applyScreening) + "_" +
+      fConfig->processName;
+  }
+  else
+  {
+    outFileName += fConfig->wfType +
+      "_" + placeOfComputation + "_" + nameSeed;
+  }
+
+  if (placeOfComputation == "radial")
+  {
+    if (fConfig->wfType == "scattering")
+    {
+      outFileName += "_iE" + std::to_string(iEnergy) + "_k" + std::to_string(iK) + ".dat";
+    }
+    else
+    {
+      outFileName += "_n" + std::to_string(iN) + "_k" + std::to_string(iK) + ".dat";
+    }
+  }
+  else
+  {
+    outFileName += ".dat";
+  }
+  return outFileName;
+}
 void radial_interface::SolveScatteringStates() {
   double DR0[NDIM];
   radwf.NGP = fConfig->nRadialPoints;
 
   // Prepare file for writting wave-functions on surface
   std::string nameSeed = fConfig->wfFileNameSeed == "" ? fConfig->potentialType : fConfig->wfFileNameSeed;
-  std::string surfaceWFFileName = "";
-  if (fConfig->outputDirectory == ""){
-    surfaceWFFileName =
-      "../Nuclei/" + fConfig->nucleusName + "/" + fConfig->nucleusName +
-      "_surface_" + fConfig->wfType + "_" + nameSeed +
-      "_screening" + std::to_string(fConfig->applyScreening) + "_" +
-      fConfig->processName + ".dat";
-  }
-  else{
-    surfaceWFFileName = fConfig->outputDirectory + "/" + fConfig->nucleusName +
-      "_surface_" + fConfig->wfType + "_" + nameSeed +
-      "_screening" + std::to_string(fConfig->applyScreening) + "_" +
-      fConfig->processName + ".dat";
-  }
+  std::string surfaceWFFileName = CreateFileName("surface");
+  
+  // if (fConfig->outputDirectory == ""){
+  //   surfaceWFFileName =
+  //     "../Nuclei/" + fConfig->nucleusName + "/" + fConfig->nucleusName +
+  //     "_surface_" + fConfig->wfType + "_" + nameSeed +
+  //     "_screening" + std::to_string(fConfig->applyScreening) + "_" +
+  //     fConfig->processName + ".dat";
+  // }
+  // else{
+  //   surfaceWFFileName = fConfig->outputDirectory + "/" + fConfig->wfType +
+  //     "_surface_" + nameSeed + ".dat";
+  // }
   std::ofstream surfaceWFFile;
 
   surfaceWFFile.open(surfaceWFFileName.data(), std::ofstream::trunc);
@@ -349,19 +384,20 @@ void radial_interface::SolveScatteringStates() {
       if (fConfig->writeWF == 0)
         continue;
 
-      std::string radFileName = "";
-      if (fConfig->outputDirectory == ""){
-        radFileName = "../Nuclei/" + fConfig->nucleusName + "/" + fConfig->nucleusName + "_" +
-        fConfig->wfType + "_radial_" + nameSeed + "_screening" +
-        std::to_string(fConfig->applyScreening) + "_" + fConfig->processName +
-        "_iE" + std::to_string(iEnergy) + "_k" + std::to_string(iK) + ".dat";
-      }
-      else{
-        radFileName = fConfig->outputDirectory + "/" + fConfig->nucleusName + "_" +
-        fConfig->wfType + "_radial_" + nameSeed + "_screening" +
-        std::to_string(fConfig->applyScreening) + "_" + fConfig->processName +
-        "_iE" + std::to_string(iEnergy) + "_k" + std::to_string(iK) + ".dat";
-      }
+      std::string radFileName = CreateFileName("radial", iEnergy, 0, iK);
+      
+      // if (fConfig->outputDirectory == ""){
+      //   radFileName = "../Nuclei/" + fConfig->nucleusName + "/" + fConfig->nucleusName + "_" +
+      //   fConfig->wfType + "_radial_" + nameSeed + "_screening" +
+      //   std::to_string(fConfig->applyScreening) + "_" + fConfig->processName +
+      //   "_iE" + std::to_string(iEnergy) + "_k" + std::to_string(iK) + ".dat";
+      // }
+      // else{
+      //   radFileName = fConfig->outputDirectory + "/" + fConfig->nucleusName + "_" +
+      //   fConfig->wfType + "_radial_" + nameSeed + "_screening" +
+      //   std::to_string(fConfig->applyScreening) + "_" + fConfig->processName +
+      //   "_iE" + std::to_string(iEnergy) + "_k" + std::to_string(iK) + ".dat";
+      // }
       int irMax = radwf.NGP - 1;
       // for (int i = radwf.NGP - 1; i >= 0; i--) {
       //   if (abs(radwf.P[i]) > 1.E-35) {
@@ -446,20 +482,21 @@ void radial_interface::SolveBoundStates() {
 
   // prepare file for writing wave-functions on surface
   std::string nameSeed = fConfig->wfFileNameSeed == "" ? fConfig->potentialType : fConfig->wfFileNameSeed;
-  std::string surfaceWFFileName = "";
-  if (fConfig->outputDirectory == ""){
-    surfaceWFFileName =
-      "../Nuclei/" + fConfig->nucleusName + "/" + fConfig->nucleusName +
-      "_surface_" + fConfig->wfType + "_" + nameSeed +
-      "_screening" + std::to_string(fConfig->applyScreening) + "_" +
-      fConfig->processName + ".dat";
-  }
-  else{
-    surfaceWFFileName = fConfig->outputDirectory + "/" + fConfig->nucleusName +
-      "_surface_" + fConfig->wfType + "_" + nameSeed +
-      "_screening" + std::to_string(fConfig->applyScreening) + "_" +
-      fConfig->processName + ".dat";
-  }
+  std::string surfaceWFFileName = CreateFileName("surface");
+  
+  // if (fConfig->outputDirectory == ""){
+  //   surfaceWFFileName =
+  //     "../Nuclei/" + fConfig->nucleusName + "/" + fConfig->nucleusName +
+  //     "_surface_" + fConfig->wfType + "_" + nameSeed +
+  //     "_screening" + std::to_string(fConfig->applyScreening) + "_" +
+  //     fConfig->processName + ".dat";
+  // }
+  // else{
+  //   surfaceWFFileName = fConfig->outputDirectory + "/" + fConfig->nucleusName +
+  //     "_surface_" + fConfig->wfType + "_" + nameSeed +
+  //     "_screening" + std::to_string(fConfig->applyScreening) + "_" +
+  //     fConfig->processName + ".dat";
+  // }
 
   std::ofstream surfaceWFFile;
   surfaceWFFile.open(surfaceWFFileName.data(), std::ofstream::trunc);
@@ -532,20 +569,20 @@ void radial_interface::SolveBoundStates() {
 
       if (!fConfig->writeWF)
         continue;
-      std::string boundWFFileName = "";
-      if (fConfig->outputDirectory == ""){
-         boundWFFileName =
-          "../Nuclei/" + fConfig->nucleusName + "/" + fConfig->nucleusName + "_" +
-          fConfig->wfType + "_" + nameSeed + "_screening" +
-          std::to_string(fConfig->applyScreening) + "_" + fConfig->processName +
-          "_n" + std::to_string(iN) + "_k" + std::to_string(iK) + ".dat";
-      }
-      else{
-        boundWFFileName = fConfig->outputDirectory + "/" + fConfig->nucleusName + "_" +
-          fConfig->wfType + "_" + nameSeed + "_screening" +
-          std::to_string(fConfig->applyScreening) + "_" + fConfig->processName +
-          "_n" + std::to_string(iN) + "_k" + std::to_string(iK) + ".dat";
-      }
+      std::string boundWFFileName = CreateFileName("radial", 0, iN, iK);
+      // if (fConfig->outputDirectory == ""){
+      //    boundWFFileName =
+      //     "../Nuclei/" + fConfig->nucleusName + "/" + fConfig->nucleusName + "_" +
+      //     fConfig->wfType + "_" + nameSeed + "_screening" +
+      //     std::to_string(fConfig->applyScreening) + "_" + fConfig->processName +
+      //     "_n" + std::to_string(iN) + "_k" + std::to_string(iK) + ".dat";
+      // }
+      // else{
+      //   boundWFFileName = fConfig->outputDirectory + "/" + fConfig->nucleusName + "_" +
+      //     fConfig->wfType + "_" + nameSeed + "_screening" +
+      //     std::to_string(fConfig->applyScreening) + "_" + fConfig->processName +
+      //     "_n" + std::to_string(iN) + "_k" + std::to_string(iK) + ".dat";
+      // }
       
       int iMaxR = -1;
       for (int i = radwf.NGP - 1; i >= 0; i--) {
