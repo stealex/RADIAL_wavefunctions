@@ -41,3 +41,63 @@ def make_potential_from_dhfs(nuc):
 		
 		np.savetxt(f'potential_with_Latter_{nuc}.dat', np.c_[radius, potential_with_Latter], fmt='%15.8e')
 		np.savetxt(f'potential_no_Latter_{nuc}.dat', np.c_[radius, potential_no_Latter], fmt='%15.8e')
+
+
+def create_dirac_config(out_file_name, config):
+	with open("wavefunctions_initial_tmp.conf") as config_file_tmp:
+		lines = config_file_tmp.readlines()
+		config_file = open(out_file_name, 'w')
+		for line in lines:
+			if "processName= " in line:
+				line = "processName= " + config["DIRAC"]["processName"]+"\n"
+			
+			if "nucleusName= " in line:
+				line = "nucleusName= " + config["DIRAC"]["nucleusName"]+"\n"
+			if "zParent= " in line:
+				line = "zParent= " + config["DIRAC"]["zInitial"]+"\n"
+			if "aParent= " in line:
+				line = "aParent= " + config["DIRAC"]["aInitial"]+"\n"
+			
+			if "radiusBounds= " in line:
+				line = "radiusBounds= " + config["DIRAC"]["radiusBounds"]+"\n"
+			if "nRadialPoints= " in line:
+				line = "nRadialPoints= " + config["DIRAC"]["nRadialPoints"]+"\n"
+			
+			if "wavefunctionsType= " in line:
+				line = "wavefunctionsType= "+ config["DIRAC"]["wavefunctionsType"]+"\n"
+
+			if "potentialType= " in line:
+				line = "potentialType= FromFile"+"\n"
+			if "potentialRepository= " in line:
+				line = "potentialRepository= ./"+"\n"
+			if "potentialFileName= " in line:
+				line = f'potentialFileName= {str(config["DIRAC"]["potentialFileName"])} \n'
+
+			if "wfFileNameSeed= " in line:
+				line = "wfFileNameSeed= " + config["DIRAC"]["wfFileNameSeed"] + "\n"
+			if "outputDirectory= " in line:
+				line = "outputDirectory= " + config["DIRAC"]["outputDirectory"]
+
+			if "applyScreening= " in line:
+				line = "applyScreening= 0"+"\n"
+			
+			if "minimumEnergy= " in line:
+				line = "minimumEnergy= "+ config["DIRAC"]["minimumEnergy"]+"\n"
+			if "maxmimumEnergy= " in line:
+				line = "maximumEnergy= "+ config["DIRAC"]["maximumEnergy"]+"\n"
+			if "nEnergyPoints= " in line:
+				line = "nEnergyPoints= " + config["DIRAC"]["nEnergyPoints"]+"\n"
+			
+			if "writeWF= " in line:
+				line = "writeWF= "+config["DIRAC"]["writeWF"]+"\n"
+			if "kBounds= " in line:
+				line = "kBounds= "+config["DIRAC"]["kBounds"]+"\n"
+
+			if "minPrincipalQN= " in line:
+				line = "minPrincipalQN= "+config["DIRAC"]["minPrincipalQN"]+"\n"
+			if "maxPrincipalQN= " in line:
+				line = "maxPrincipalQN= "+config["DIRAC"]["maxPrincipalQN"]+"\n"
+
+			config_file.write(line)
+		config_file.close()
+
