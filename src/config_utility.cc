@@ -156,11 +156,6 @@ void config_utility::Initialize(const std::string &configFileName){
         else if (tokens[0].find("applyScreening") != std::string::npos){
             applyScreening = std::atoi(tokens[1].data());
             tokens.clear();
-            std::cout << "Will ";
-            if (applyScreening)
-                std::cout << "";
-            else std::cout << "NOT ";
-            std::cout << "apply screening correction" <<std::endl;
             continue;
         }
         else if (tokens[0].find("minimumEnergy") != std::string::npos){
