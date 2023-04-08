@@ -16,6 +16,7 @@ class config_utility{
         std::string potentialRepository;
         std::string potentialFileName;
         std::string wfFileNameSeed;
+        std::string outputDirectory;
         double zParent;
         double aParent;
         double maximumRadius;
