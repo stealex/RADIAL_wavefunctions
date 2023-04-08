@@ -1,6 +1,15 @@
 import os
 import numpy as np
 
+processDict = {
+  "betaMinus"  : {"DeltaZNuc" : 1,  "DeltaZAtom" : 0},
+  "2betaMinus" : {"DeltaZNuc" : 2,  "DeltaZAtom" : 0},
+  "betaPlus"   : {"DeltaZNuc" : -1,  "DeltaZAtom" : 0},
+  "2betaPlus"  : {"DeltaZNuc" : -2,  "DeltaZAtom" : 0},
+  "EC"         : {"DeltaZNuc" : -1,  "DeltaZAtom" : 1},
+  "2EC"        : {"DeltaZNuc" : -2,  "DeltaZAtom" : 2},
+  "ECBetaPlus" : {"DeltaZNuc" : -2,  "DeltaZAtom" : 1}
+};
 
 def move_dhfs_output(z, nuc):
 	if (nuc != "initial") and ("final" not in nuc):
@@ -38,9 +47,11 @@ def make_potential_from_dhfs(nuc):
 
 		potential_with_Latter = rv_nuc+rv_el+rv_ex
 		potential_no_Latter = rv_nuc+rv_el - 1.5*((3./np.pi)**(1./3.))*radius*(rho**(1./3.))
+		potential_no_exchange = rv_nuc+rv_el
 		
 		np.savetxt(f'potential_with_Latter_{nuc}.dat', np.c_[radius, potential_with_Latter], fmt='%15.8e')
 		np.savetxt(f'potential_no_Latter_{nuc}.dat', np.c_[radius, potential_no_Latter], fmt='%15.8e')
+		np.savetxt(f'potential_no_exchange_{nuc}.dat', np.c_[radius, potential_no_exchange], fmt='%15.8e')
 
 
 def create_dirac_config(out_file_name, config):
@@ -67,7 +78,7 @@ def create_dirac_config(out_file_name, config):
 				line = "wavefunctionsType= "+ config["DIRAC"]["wavefunctionsType"]+"\n"
 
 			if "potentialType= " in line:
-				line = "potentialType= FromFile"+"\n"
+				line = "potentialType= "+config["DIRAC"]["potentialType"]+"\n"
 			if "potentialRepository= " in line:
 				line = "potentialRepository= ./"+"\n"
 			if "potentialFileName= " in line:
@@ -79,11 +90,11 @@ def create_dirac_config(out_file_name, config):
 				line = "outputDirectory= " + config["DIRAC"]["outputDirectory"]
 
 			if "applyScreening= " in line:
-				line = "applyScreening= 0"+"\n"
+				line = "applyScreening= "+ config["DIRAC"]["applyScreening"]+"\n"
 			
 			if "minimumEnergy= " in line:
 				line = "minimumEnergy= "+ config["DIRAC"]["minimumEnergy"]+"\n"
-			if "maxmimumEnergy= " in line:
+			if "maximumEnergy= " in line:
 				line = "maximumEnergy= "+ config["DIRAC"]["maximumEnergy"]+"\n"
 			if "nEnergyPoints= " in line:
 				line = "nEnergyPoints= " + config["DIRAC"]["nEnergyPoints"]+"\n"
