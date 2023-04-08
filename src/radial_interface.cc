@@ -87,7 +87,7 @@ void radial_interface::Initialize() {
   ObtainPotential(zPotential);
 
   // screening
-  if (fConfig->applyScreening)
+  if (fConfig->applyScreening && fConfig->potentialType.find("FromFile") == std::string::npos)
     ApplyScreening();
 
   // pass potential to fortran
@@ -203,6 +203,7 @@ void radial_interface::ReadPotentialFile(std::ifstream &file){
 }
 
 void radial_interface::ApplyScreening(int nPoints) {
+  std::cout << "WILL APPLY SCREENING CORRECTION" << std::endl;
   math_tools *mathInstance = math_tools::GetInstance();
 
   double bScreen       = 0.8853 * a0 * std::pow(fConfig->zParent, -1. / 3.);
