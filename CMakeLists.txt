@@ -5,7 +5,7 @@ include(FortranCInterface)
 
 FortranCInterface_VERIFY(CXX)
 
-set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -g -fPIC -fno-automatic -fno-backslash -fno-second-underscore -falign-commons")
+set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -g -fPIC -fno-automatic -fno-backslash -fno-second-underscore -falign-commons -Wintrinsic-shadow")
 
 add_subdirectory(src)
 
