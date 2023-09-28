@@ -1,5 +1,6 @@
-#FC=gfortran
-#CC=gcc
+FC=gfortran
+CC=gcc-13
+CXX=g++-13
 
 BUILD_DIR := build
 BIN_DIR := bin
