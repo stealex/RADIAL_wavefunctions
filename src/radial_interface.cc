@@ -343,8 +343,8 @@ void radial_interface::SolveScatteringStates() {
     double norm = std::sqrt((energyPoints[iEnergy] + 2. * electronMass) /
                             (2. * (energyPoints[iEnergy] + electronMass)));
 
-    double waveLength =
-      2.0 * pi / std::sqrt(e * (2.0 + e * fineStructure * fineStructure));
+    double waveLength __attribute__((unused));
+    waveLength = 2.0 * pi / std::sqrt(e * (2.0 + e * fineStructure * fineStructure));
     // double drn = waveLength / 40.0;
     // double rn  = drn * (radwf.NGP - 300.);
     double rn = fConfig->maximumRadius/a0;
