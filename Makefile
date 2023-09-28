@@ -34,7 +34,7 @@ $(BUILD_DIR)/libFortran: $(CPP_SRC_DIR)/radial.f | $(BUILD_DIR)
 	$(FC) $(FORTRAN_FLAGS) -c $< -o $@ -J$(BUILD_DIR)
 
 $(BUILD_DIR)/libCPP: $(CPP_OBJ_FILES) | $(BUILD_DIR)
-	ld -relocatable $^ -o $@
+	ld -l $^ -o $@
 
 $(BUILD_DIR)/%_c.o: $(CPP_SRC_DIR)/%.cc | $(BUILD_DIR)
 	$(CXX) $(CPP_FLAGS) $(CXXFLAGS) -c $< -o $@  $(LDFLAGS) $(LDLIBS)
