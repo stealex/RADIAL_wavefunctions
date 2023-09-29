@@ -15,7 +15,7 @@ CPP_FLAGS_X86 := -Iinclude -MMD -MP -Wpacked -malign-double -mpreferred-stack-bo
 CPP_FLAGS_ARM64 := -Iinclude -MMD -MP -Wpacked -std=c++11
 CXXFLAGS := -Wall -g
 LD_FLAGS_X86 := -Llib -lstdc++
-LD_FLAGS_ARM64 := -L/usr/local/lib -lstdc++ -ld_classic
+LD_FLAGS_ARM64 := -L/usr/local/lib -lstdc++
 LDLIBS := -lm
 
 ifeq (${ARCH},arm64)
