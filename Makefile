@@ -1,9 +1,5 @@
 ARCH := $(shell uname -m)
 
-FC=gfortran
-CC=gcc-13
-CXX=g++-13
-
 BUILD_DIR := build
 BIN_DIR := bin
 
@@ -14,12 +10,27 @@ CPP_INCLUDE_DIR := include
 CPP_SOURCES := $(wildcard $(CPP_SRC_DIR)/*.cc)
 CPP_OBJ_FILES := $(patsubst $(CPP_SRC_DIR)/%.cc,$(BUILD_DIR)/%_c.o,$(CPP_SOURCES))
 
-# CPP_FLAGS := -Iinclude -MMD -MP -Wpacked -malign-double -mpreferred-stack-boundary=8
-CPP_FLAGS := -Iinclude -MMD -MP -Wpacked -std=c++11
 FORTRAN_FLAGS := -g -fPIC -fno-automatic -fno-backslash -fno-second-underscore -falign-commons
+CPP_FLAGS_X86 := -Iinclude -MMD -MP -Wpacked -malign-double -mpreferred-stack-boundary=8
+CPP_FLAGS_ARM64 := -Iinclude -MMD -MP -Wpacked -std=c++11
 CXXFLAGS := -Wall -g
-LDFLAGS := -Llib -lstdc++
+LD_FLAGS_X86 := -Llib -lstdc++
+LD_FLAGS_ARM64 := -L/usr/local/lib -lstdc++ -ld_classic
 LDLIBS := -lm
+
+ifeq (${ARCH},arm64)
+    LDFLAGS := ${LD_FLAGS_ARM64}
+	CPP_FLAGS := ${CPP_FLAGS_ARM64}
+	FC=gfortran
+	CC=gcc-13
+	CXX=g++-13
+else
+    LDFLAGS := ${LD_FLAGS_X86}
+	CPP_FLAGS := ${CPP_FLAGS_X86}
+	FC=gfortran
+	CC=gcc
+	CXX=g++
+endif
 
 all: $(EXE)
 .PHONY: all clean
@@ -49,4 +60,5 @@ arch_test:
 	@if [ "$(ARCH)" = "arm64" ]; then \
 		echo "Hello ${ARCH}"; \
 	fi
+
 -include $(OBJ:_c.o=.d)
