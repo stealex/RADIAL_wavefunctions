@@ -1,3 +1,5 @@
+ARCH := $(shell uname -m)
+
 FC=gfortran
 CC=gcc-13
 CXX=g++-13
@@ -42,4 +44,9 @@ $(BUILD_DIR)/%_c.o: $(CPP_SRC_DIR)/%.cc | $(BUILD_DIR)
 clean:
 	@$(RM) -rv $(BIN_DIR) $(BUILD_DIR)
 
+arch_test:
+	@echo "Running on architecture: ${ARCH}"
+	@if [ "$(ARCH)" = "arm64" ]; then \
+		echo "Hello ${ARCH}"; \
+	fi
 -include $(OBJ:_c.o=.d)
