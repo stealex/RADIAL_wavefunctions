@@ -15,16 +15,18 @@ CPP_FLAGS_X86 := -Iinclude -MMD -MP -Wpacked -malign-double -mpreferred-stack-bo
 CPP_FLAGS_ARM64 := -Iinclude -MMD -MP -Wpacked -std=c++11
 CXXFLAGS := -Wall -g
 LD_FLAGS_X86 := -Llib -lstdc++
-LD_FLAGS_ARM64 := -L/usr/local/lib -lstdc++
+LD_FLAGS_ARM64 := -L/usr/local/lib -lstdc++ -ld_classic
 LDLIBS := -lm
 
 ifeq (${ARCH},arm64)
+	# arch should be "arm64"
     LDFLAGS := ${LD_FLAGS_ARM64}
 	CPP_FLAGS := ${CPP_FLAGS_ARM64}
 	FC=gfortran
 	CC=gcc-13
 	CXX=g++-13
 else
+	# arch should be "x86_64"
     LDFLAGS := ${LD_FLAGS_X86}
 	CPP_FLAGS := ${CPP_FLAGS_X86}
 	FC=gfortran
